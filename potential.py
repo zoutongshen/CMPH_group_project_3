@@ -69,6 +69,7 @@ class GalaxyPotential:
         )
         self._build_density_tables(polar_grid_size)
         self._build_enclosed_mass_table()
+        self._build_isotropic_jeans_tables()
 
     def _build_density_tables(self, polar_grid_size: int) -> None:
         """Populate spherical-shell-averaged density tables for each component."""
@@ -129,6 +130,51 @@ class GalaxyPotential:
             self._mass_enclosed / self._radii ** 3
             + 4.0 * np.pi * self._rho_total
         )
+
+    def _build_isotropic_jeans_tables(self) -> None:
+        """
+        Isotropic spherical Jeans equation (eq 2.63):
+
+            sigma_r^2(r) = (1 / rho(r)) * integral_r^infty rho(r') dPhi/dr' dr'
+
+        applied to the bulge and halo separately, using the *total* potential's
+        radial derivative dPhi/dr = G M_total(<r) / r^2. The integral is built
+        once for each component on the master radial grid.
+        """
+        potential_derivative = self._mass_enclosed / self._radii ** 2
+
+        for component_name, component_density in (
+            ("bulge", self._rho_bulge),
+            ("halo", self._rho_halo),
+        ):
+            integrand = component_density * potential_derivative
+            spacing = np.diff(self._radii)
+            forward_increments = 0.5 * (integrand[1:] + integrand[:-1]) * spacing
+            cumulative_forward = np.concatenate(
+                ([0.0], np.cumsum(forward_increments))
+            )
+            cumulative_from_r = cumulative_forward[-1] - cumulative_forward
+
+            safe_density = np.maximum(component_density, 1.0e-300)
+            sigma_r_squared = cumulative_from_r / safe_density
+            sigma_r_squared = np.maximum(sigma_r_squared, 0.0)
+
+            setattr(self, f"_sigma_r_squared_{component_name}", sigma_r_squared)
+
+    def bulge_velocity_dispersion_squared(self, r: ArrayOrScalar) -> ArrayOrScalar:
+        """
+        Isotropic radial velocity dispersion squared sigma_r^2(r) for the bulge,
+        from spherical Jeans (eq 2.63) in the total potential. By isotropy,
+        each Cartesian component shares this variance.
+        """
+        return np.interp(r, self._radii, self._sigma_r_squared_bulge)
+
+    def halo_velocity_dispersion_squared(self, r: ArrayOrScalar) -> ArrayOrScalar:
+        """
+        Isotropic radial velocity dispersion squared sigma_r^2(r) for the halo,
+        from spherical Jeans (eq 2.63) in the total potential.
+        """
+        return np.interp(r, self._radii, self._sigma_r_squared_halo)
 
     def enclosed_mass(self, r: ArrayOrScalar) -> ArrayOrScalar:
         """Total mass enclosed within spherical radius r."""
