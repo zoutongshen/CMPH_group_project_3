@@ -121,6 +121,23 @@ def make_merger_initial_conditions(
         2.0 * galaxy_mass, separation, pericentre
     )
 
+    # Each galaxy is an independent finite-N realisation, so it carries a
+    # small spurious bulk position/velocity offset (~1-2% of v at default
+    # N). Remove each galaxy's own mass-weighted centroid and mean velocity
+    # before placing it on the orbit, so the only motion is the prescribed
+    # two-body orbit and the system has exactly zero net momentum.
+    for positions, velocities, component_masses in (
+        (positions_1, velocities_1, masses_1),
+        (positions_2, velocities_2, masses_2),
+    ):
+        total = component_masses.sum()
+        positions -= (
+            positions * component_masses[:, None]
+        ).sum(axis=0) / total
+        velocities -= (
+            velocities * component_masses[:, None]
+        ).sum(axis=0) / total
+
     # Equal masses: place symmetrically about the centre of mass and give
     # each half of the relative velocity, so net momentum is zero.
     centre_offset = np.array([0.5 * separation, 0.0, 0.0])

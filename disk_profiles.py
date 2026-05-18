@@ -146,7 +146,7 @@ def central_surface_density(
     return inside * mass_per_particle / (np.pi * aperture_radius ** 2)
 
 
-def analyse_snapshot(
+def snapshot_profiles(
     positions: np.ndarray,
     masses: np.ndarray,
     num_disk: int,
@@ -230,12 +230,12 @@ def plot_comparison(
     cylindrical_edges = np.linspace(0.05, 12.0, 50)
     central_aperture = 1.0 / units.length_kpc  # 1 kpc, in code units
 
-    initial = analyse_snapshot(
+    initial = snapshot_profiles(
         positions_history[0].astype(np.float64), masses,
         num_disk, num_bulge, spherical_edges, cylindrical_edges,
         central_aperture,
     )
-    final = analyse_snapshot(
+    final = snapshot_profiles(
         positions_history[-1].astype(np.float64), masses,
         num_disk, num_bulge, spherical_edges, cylindrical_edges,
         central_aperture,
