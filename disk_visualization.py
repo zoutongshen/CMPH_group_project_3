@@ -25,6 +25,7 @@ import numpy as np
 
 from disk_profiles import split_components
 from physical_units import milky_way_unit_system
+from stability_test import fit_disk_scale_height
 
 # Distinct colours per component (disk light, bulge red, halo faint blue),
 # echoing the manual's "disk white / bulge red" convention.
@@ -130,6 +131,93 @@ def make_snapshot_figure(
     plt.close(figure)
 
 
+def disk_thickening_figure(
+    trajectory: Dict[str, np.ndarray],
+    output_png: str,
+    edge_zoom_kpc: float = 8.0,
+    height_zoom_kpc: float = 3.0,
+) -> Dict[str, float]:
+    """
+    Make the disk vertical-thickening figure and return the fitted
+    scale heights.
+
+    The wide Q1/Q2 panels make t = 0 and t = final look identical because
+    the finite-N vertical heating is only ~1 kpc -- invisible at an
+    80 kpc field of view. This figure isolates it: a tight edge-on zoom
+    of the disk particles only (t = 0 blue, t = final red) next to the
+    normalised vertical density profile n(|z|) at both times, annotated
+    with the sech^2 scale height z_0 = sqrt(12 <z^2> / pi^2).
+    """
+    units = milky_way_unit_system()
+    positions_history = trajectory["positions_history"]
+    masses = trajectory["masses"]
+    num_disk = int(trajectory["num_disk"])
+    num_bulge = int(trajectory["num_bulge"])
+    times = trajectory["snapshot_times"]
+    snapshot_indices = [0, positions_history.shape[0] - 1]
+
+    figure, (axis_edge, axis_profile) = plt.subplots(
+        1, 2, figsize=(15, 6), constrained_layout=True
+    )
+    colours = ("#1f77b4", "#d62728")
+    scale_heights = {}
+
+    height_edges = np.linspace(0.0, height_zoom_kpc, 40)
+    height_centres = 0.5 * (height_edges[:-1] + height_edges[1:])
+
+    # Measure the disk vertical structure on the raw particle positions,
+    # exactly as stability_test does: the IC is built at the origin with
+    # zero net momentum, so the disk midplane stays at z = 0. Recentring
+    # on the (halo-dominated) global centroid would tilt/shift the disk
+    # frame and artificially dilute the measured heating.
+    for colour, snapshot_index in zip(colours, snapshot_indices):
+        positions = positions_history[snapshot_index].astype(np.float64)
+        disk = split_components(positions, num_disk, num_bulge)["disk"]
+        time_label = f"t = {times[snapshot_index]:.0f}"
+
+        scale_height_code = fit_disk_scale_height(disk)
+        scale_height_kpc = scale_height_code * units.length_kpc
+        scale_heights[time_label] = scale_height_kpc
+
+        axis_edge.scatter(
+            disk[:, 0] * units.length_kpc,
+            disk[:, 2] * units.length_kpc,
+            s=0.5, c=colour, alpha=0.4, linewidths=0.0,
+            label=f"{time_label}  (z0 = {scale_height_kpc:.2f} kpc)",
+        )
+
+        absolute_height = np.abs(disk[:, 2]) * units.length_kpc
+        counts, _ = np.histogram(absolute_height, bins=height_edges)
+        normalised = counts / counts.max()
+        axis_profile.semilogy(
+            height_centres, normalised, color=colour,
+            label=f"{time_label}  (z0 = {scale_height_kpc:.2f} kpc)",
+        )
+
+    axis_edge.set_xlim(-edge_zoom_kpc, edge_zoom_kpc)
+    axis_edge.set_ylim(-height_zoom_kpc, height_zoom_kpc)
+    axis_edge.set_aspect("equal")
+    axis_edge.set_xlabel("x  [kpc]")
+    axis_edge.set_ylabel("z  [kpc]")
+    axis_edge.set_title("Disk edge-on (tight zoom)")
+    axis_edge.legend(loc="upper right", fontsize=9, markerscale=8)
+
+    axis_profile.set_xlabel("|z|  [kpc]")
+    axis_profile.set_ylabel("normalised disk count")
+    axis_profile.set_title("Vertical density profile")
+    axis_profile.set_ylim(1.0e-3, 1.5)
+    axis_profile.legend(fontsize=9)
+
+    figure.suptitle(
+        f"Disk vertical thickening -- N = {len(masses)}, "
+        f"eps = {float(trajectory['softening']):g}  (MW physical scaling)",
+        fontsize=13,
+    )
+    figure.savefig(output_png, dpi=120)
+    plt.close(figure)
+    return scale_heights
+
+
 def main() -> None:
     """Load a trajectory dump and write the Q1/Q2 image."""
     parser = argparse.ArgumentParser(
@@ -146,6 +234,12 @@ def main() -> None:
 
     make_snapshot_figure(trajectory, output_png)
     print(f"Saved {output_png}")
+
+    thickening_png = output_png.replace(".png", "_thickening.png")
+    scale_heights = disk_thickening_figure(trajectory, thickening_png)
+    print(f"Saved {thickening_png}")
+    for time_label, scale_height_kpc in scale_heights.items():
+        print(f"  {time_label}: z0 = {scale_height_kpc:.3f} kpc")
 
 
 if __name__ == "__main__":
