@@ -17,6 +17,7 @@ Runs analysed:
 | test | 12 000 (6k stellar + halo) | `data/merger_test12k_rp5.npz` |
 | production | 40 000 (20k/galaxy) | `data/merger_N40k_eps01.npz` |
 | clean cross-check | 80 000 (40k/galaxy) | `data/merger_N80k_eps01.npz` |
+| high-N fidelity | 160 000 (80k/galaxy) | `data/merger_N160k_eps01.npz` |
 
 Figures: `figures/merger_*_remnant.png` (profiles, Q7),
 `figures/merger_N*.gif` (animation). Reproduce with
@@ -48,8 +49,9 @@ suppresses long tails relative to disk-dominated encounters
   | 12 000 | −2.18 | 6.67 |
   | 40 000 | −2.22 | 5.71 |
   | 80 000 | −2.26 | 5.56 |
+  | 160 000 | −2.25 | 5.58 |
 
-  The slope is stable across a factor ~7 in N, so this is a physical
+  The slope is stable across a factor ~13 in N, so this is a physical
   result, not a finite-N artefact: **merging two cold exponential disks
   produces a hot R^{1/4} spheroid** (the Toomre 1977 "mergers make
   ellipticals" hypothesis, reproduced from scratch).
@@ -91,9 +93,10 @@ Hernquist (1992, 1993) — N-body disc-galaxy mergers; de Vaucouleurs
 Unlike the isolated-disk vertical heating (which is finite-N dominated,
 see `NOTES_DISK_HEATING.md`), the merger remnant's gross structure is
 set by violent relaxation and is *not* finite-N sensitive: the
-R^{1/4} slope moves only −0.18 → −0.22 → −0.26 from N = 12k to
-40k to 80k (a few per cent per doubling, monotone and shrinking),
-and the remnant half-mass radius settles at 6.7 → 5.7 → 5.6 kpc.
-The structural conclusion is converged at 80k. High-N (160k) is
-therefore a fidelity check, not a correctness requirement — it is
-queued as an optional overnight run.
+R^{1/4} slope moves −0.18 → −0.22 → −0.26 → −0.25 from N = 12k
+to 40k to 80k to 160k, and the remnant half-mass radius settles at
+6.7 → 5.7 → 5.6 → 5.6 kpc. Doubling the resolution from 80k to
+160k shifts the slope by only +0.01 and the half-mass radius by
+0.02 kpc (~0.4 %) — i.e. the structural conclusion was already
+converged at 80k, and the 160k run (executed overnight, 4.3 h wall
+on 10 cores) confirms it directly rather than merely extrapolating.
