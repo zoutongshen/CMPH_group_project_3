@@ -3,10 +3,10 @@ Merger-remnant analysis for the section 3.0.5 exercise (Q7).
 
 Compares the *stellar* (disk + bulge) structure before and after the
 collision: the projected surface-density profile and the cumulative-mass
-profile of the relaxed remnant versus the original exponential disks.
-The key physical question is whether the violent relaxation of the
-merger turns the cold exponential disks into a hot, centrally
-concentrated spheroid that follows the de Vaucouleurs R^{1/4} law
+profile of the relaxed remnant versus an original exponential disk. The
+key physical question is whether the violent relaxation of the merger
+turns the cold exponential disks into a hot, centrally concentrated
+spheroid that follows the de Vaucouleurs R^{1/4} law
 
     log10 Sigma(R)  is linear in  R^{1/4}
 
@@ -46,6 +46,24 @@ def stellar_mask(
     mask = np.zeros(2 * per_galaxy, dtype=bool)
     for galaxy_start in (0, per_galaxy):
         mask[galaxy_start : galaxy_start + num_disk + num_bulge] = True
+    return mask
+
+
+def single_galaxy_stellar_mask(
+    num_disk: int, num_bulge: int, num_halo: int, galaxy_index: int
+) -> np.ndarray:
+    """
+    Boolean mask selecting the stellar particles of one galaxy only.
+
+    Used for the t = 0 progenitor comparison: at the start the two
+    galaxies are ~100 kpc apart, so a meaningful disk profile must be
+    measured about a single galaxy's own centre, not the empty midpoint
+    between them.
+    """
+    per_galaxy = num_disk + num_bulge + num_halo
+    mask = np.zeros(2 * per_galaxy, dtype=bool)
+    galaxy_start = galaxy_index * per_galaxy
+    mask[galaxy_start : galaxy_start + num_disk + num_bulge] = True
     return mask
 
 
@@ -102,7 +120,7 @@ def merger_remnant_figure(
 ) -> dict:
     """
     Plot the stellar surface density (vs R and vs R^{1/4}) and the
-    cumulative mass, initial vs final, and return a numeric summary.
+    cumulative mass, progenitor vs remnant, and return a numeric summary.
     """
     units = milky_way_unit_system()
     positions_history = trajectory["positions_history"]
@@ -112,18 +130,22 @@ def merger_remnant_figure(
     num_halo = int(trajectory["num_halo"])
     times = trajectory["snapshot_times"]
 
-    stars = stellar_mask(num_disk, num_bulge, num_halo)
-    star_masses = masses[stars]
-    initial_positions = positions_history[0][stars].astype(np.float64)
-    final_positions = positions_history[-1][stars].astype(np.float64)
+    # Progenitor: a single galaxy's stars at t = 0, about its own centre
+    # (the two galaxies start ~100 kpc apart). Remnant: all stars at the
+    # end, about the shrinking-sphere density centre.
+    progenitor = single_galaxy_stellar_mask(
+        num_disk, num_bulge, num_halo, galaxy_index=0
+    )
+    remnant = stellar_mask(num_disk, num_bulge, num_halo)
+    progenitor_masses = masses[progenitor]
+    remnant_masses = masses[remnant]
 
-    # Centre each epoch on its own stellar concentration: at t = 0 the two
-    # galaxies are far apart, so use the global stellar centroid; for the
-    # remnant use the shrinking-sphere density centre.
+    initial_positions = positions_history[0][progenitor].astype(np.float64)
+    final_positions = positions_history[-1][remnant].astype(np.float64)
     initial_centre = (
-        initial_positions * star_masses[:, None]
-    ).sum(axis=0) / star_masses.sum()
-    final_centre = shrinking_sphere_centre(final_positions, star_masses)
+        initial_positions * progenitor_masses[:, None]
+    ).sum(axis=0) / progenitor_masses.sum()
+    final_centre = shrinking_sphere_centre(final_positions, remnant_masses)
     initial_positions = initial_positions - initial_centre
     final_positions = final_positions - final_centre
 
@@ -131,7 +153,10 @@ def merger_remnant_figure(
     bin_centres = 0.5 * (radius_edges[:-1] + radius_edges[1:])
     bin_centres_kpc = bin_centres * units.length_kpc
     sigma_factor = units.surface_density_msun_pc2
-    star_mass_per_particle = float(star_masses[0])
+    # Disk and bulge particle masses are equal by construction
+    # (disk_mass/num_disk == bulge_mass/num_bulge for the manual ratios),
+    # so a single per-particle stellar mass is exact here.
+    star_mass_per_particle = float(progenitor_masses[0])
 
     _, sigma_initial = surface_density_profile(
         initial_positions, star_mass_per_particle, radius_edges
@@ -142,10 +167,10 @@ def merger_remnant_figure(
 
     spherical_edges = np.logspace(np.log10(0.05), np.log10(15.0), 60)
     _, mass_initial, _ = enclosed_mass_profile(
-        initial_positions, star_masses, spherical_edges
+        initial_positions, progenitor_masses, spherical_edges
     )
     _, mass_final, _ = enclosed_mass_profile(
-        final_positions, star_masses, spherical_edges
+        final_positions, remnant_masses, spherical_edges
     )
     radius_kpc = spherical_edges * units.length_kpc
 
@@ -153,18 +178,22 @@ def merger_remnant_figure(
         bin_centres_kpc, sigma_final * sigma_factor
     )
 
+    progenitor_label = "progenitor disk, 1 galaxy (t=0)"
+    remnant_label = f"remnant, 2 galaxies (t={times[-1]:.0f})"
     figure, axes = plt.subplots(1, 3, figsize=(17, 5.0))
 
     axes[0].semilogy(bin_centres_kpc, sigma_initial * sigma_factor,
-                     "C0-", label="progenitor disks (t=0)")
+                     "C0-", label=progenitor_label)
     axes[0].semilogy(bin_centres_kpc, sigma_final * sigma_factor,
-                     "C3-", label=f"remnant (t={times[-1]:.0f})")
+                     "C3-", label=remnant_label)
     axes[0].set_xlabel("R  [kpc]")
     axes[0].set_ylabel(r"$\Sigma$  [$M_\odot\,\mathrm{pc}^{-2}$]")
     axes[0].set_title("Stellar surface density vs R")
     axes[0].legend(fontsize=8)
     axes[0].set_xlim(0, 25)
 
+    axes[1].semilogy(bin_centres_kpc ** 0.25, sigma_initial * sigma_factor,
+                     "C0o", markersize=3, label="progenitor disk")
     axes[1].semilogy(bin_centres_kpc ** 0.25, sigma_final * sigma_factor,
                      "C3o", markersize=3, label="remnant")
     axes[1].semilogy(bin_centres_kpc ** 0.25, 10.0 ** model,
@@ -175,9 +204,9 @@ def merger_remnant_figure(
     axes[1].legend(fontsize=8)
 
     axes[2].semilogy(radius_kpc, mass_initial * units.mass_msun,
-                     "C0-", label="progenitor disks (t=0)")
+                     "C0-", label=progenitor_label)
     axes[2].semilogy(radius_kpc, mass_final * units.mass_msun,
-                     "C3-", label=f"remnant (t={times[-1]:.0f})")
+                     "C3-", label=remnant_label)
     axes[2].set_xlabel("r  [kpc]")
     axes[2].set_ylabel(r"$M_\star(<r)$  [$M_\odot$]")
     axes[2].set_title("Stellar cumulative mass")
@@ -193,9 +222,7 @@ def merger_remnant_figure(
     plt.close(figure)
 
     half_mass_radius_final = float(
-        np.interp(
-            0.5 * mass_final[-1], mass_final, radius_kpc
-        )
+        np.interp(0.5 * mass_final[-1], mass_final, radius_kpc)
     )
     return {
         "de_vaucouleurs_slope": float(slope),
