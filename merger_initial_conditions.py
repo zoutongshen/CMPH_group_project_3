@@ -88,7 +88,7 @@ def make_merger_initial_conditions(
     *,
     seed: int = 0,
     separation: float = 30.0,
-    pericentre: float = 2.0,
+    pericentre: float = 5.0,
     inclination_degrees: float = 30.0,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -169,7 +169,7 @@ def main() -> None:
     parser.add_argument("--n-bulge", type=int, default=2000)
     parser.add_argument("--n-halo", type=int, default=12000)
     parser.add_argument("--separation", type=float, default=30.0)
-    parser.add_argument("--pericentre", type=float, default=2.0)
+    parser.add_argument("--pericentre", type=float, default=5.0)
     parser.add_argument("--inclination", type=float, default=30.0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", type=str, default="data/merger_ic.npz")
