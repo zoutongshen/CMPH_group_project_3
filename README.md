@@ -19,6 +19,11 @@ practicum manual (`../project_3_ideas/nbody_manual.pdf`).
 | `evolve_disk.py` | §3.0.4 driver: evolve isolated disk, dump full trajectory |
 | `disk_profiles.py` | v_c / M(<r) / Σ profiles by component, physical units (Q4/Q5/Q6) |
 | `disk_visualization.py` | Face-on / edge-on images of all 3 components (Q1/Q2) |
+| `merger_initial_conditions.py` | Two-galaxy parabolic-encounter IC builder (§3.0.5) |
+| `evolve_merger.py` | §3.0.5 driver: collide two disks, dump full trajectory |
+| `merger_analysis.py` | Remnant Σ(R) / R¹ᐟ⁴ / M(<r) vs progenitor (Q7) |
+| `merger_animation.py` | Face-on + edge-on merger movie (mp4/gif) |
+| `analytic_questions.py` | Worked analytic answers Q8–Q10 (disk/bulge t_dyn) |
 | `kepler_test.py` | 2-body Kepler validation of the gravity + integrator stack |
 | `test_initial_conditions.py` | Statistical validation of the IC spatial sampler |
 | `test_potential.py` | Validation of the tabulated potential against analytic limits |
@@ -29,6 +34,8 @@ practicum manual (`../project_3_ideas/nbody_manual.pdf`).
 - `FORMULA_REFERENCES.md` — every physics formula, with manual eq # / original literature / derivation
 - `NOTES_DISK_HEATING.md` — investigation log of the IC vertical heating finding (see "Findings" below)
 - `ANSWERS_Q1_Q6.md` — written answers to the §3.0.4 manual questions Q1–Q6
+- `ANSWERS_Q7.md` — written answer to the §3.0.5 merger question Q7
+- `ANSWERS_Q8_Q10.md` — worked answers to the §3.0.6 analytic questions Q8–Q10
 
 ## Units
 
@@ -78,8 +85,8 @@ CLI flags for `stability_test.py`:
 | Velocity sampler | ✓ Isotropy / rotation / anisotropy tests pass |
 | IC isolated-disk stability test | ✓ Done — finite-N heating characterised (see findings) |
 | §3.0.4 isolated disk evolution + Q1–Q6 | ✓ Done — see `ANSWERS_Q1_Q6.md` |
-| §3.0.5 merger | ⏳ |
-| §3.0.6 additional analytic questions | ⏳ |
+| §3.0.5 merger + Q7 | ✓ Done — see `ANSWERS_Q7.md` |
+| §3.0.6 additional analytic questions | ✓ Done — see `ANSWERS_Q8_Q10.md` |
 
 ## Findings so far
 
