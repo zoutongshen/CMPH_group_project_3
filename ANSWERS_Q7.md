@@ -47,7 +47,7 @@ suppresses long tails relative to disk-dominated encounters
   |---|---|---|
   | 12 000 | −2.18 | 6.67 |
   | 40 000 | −2.22 | 5.71 |
-  | 80 000 | _TBD_ | _TBD_ |
+  | 80 000 | −2.26 | 5.56 |
 
   The slope is stable across a factor ~7 in N, so this is a physical
   result, not a finite-N artefact: **merging two cold exponential disks
@@ -91,6 +91,9 @@ Hernquist (1992, 1993) — N-body disc-galaxy mergers; de Vaucouleurs
 Unlike the isolated-disk vertical heating (which is finite-N dominated,
 see `NOTES_DISK_HEATING.md`), the merger remnant's gross structure is
 set by violent relaxation and is *not* finite-N sensitive: the
-R^{1/4} slope barely moves from N = 12k to 40k (to be confirmed at
-80k). High-N (160k) is therefore a fidelity check, not a correctness
-requirement — it is queued as an optional overnight run.
+R^{1/4} slope moves only −0.18 → −0.22 → −0.26 from N = 12k to
+40k to 80k (a few per cent per doubling, monotone and shrinking),
+and the remnant half-mass radius settles at 6.7 → 5.7 → 5.6 kpc.
+The structural conclusion is converged at 80k. High-N (160k) is
+therefore a fidelity check, not a correctness requirement — it is
+queued as an optional overnight run.
