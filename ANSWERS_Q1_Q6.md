@@ -16,6 +16,10 @@ and `python disk_visualization.py …`.
 
 ## Q1 — Morphological difference: disk vs bulge
 
+> **Q1.** Viewing the model galaxy edge-on and face-on (disk particles
+> in white, bulge particles in red): what is the morphological
+> difference?
+
 See the edge-on disk+bulge zoom panel of `evolve_N20k_eps01_images.png`.
 
 - **Disk** (dark): thin, highly flattened, rotationally supported. The
@@ -33,6 +37,9 @@ random motions (a hot, round system).
 
 ## Q2 — Adding the halo
 
+> **Q2.** Plot the halo particles in addition. What does the halo
+> component look like relative to the disk and bulge?
+
 See the face-on / edge-on "(all, incl. halo)" panels. The halo (faint
 blue) is near-spherical and far more extended than the luminous
 components: it reaches ~80 kpc while the disk is confined to ~15 kpc. It
@@ -41,6 +48,11 @@ low density, so it is invisible in a star-light image yet sets the depth
 of the potential well and keeps the outer rotation curve flat (see Q4).
 
 ## Q3 — Physical units (worked in `physical_units.py`)
+
+> **Q3.** With G = 1, length unit L = 1 → 3.5 kpc and mass unit
+> M = 1 → 5.6×10¹⁰ M⊙, derive the physical time unit (in years) and
+> the velocity unit (in km/s). Use G = 6.672×10⁻¹¹ m³ kg⁻¹ s⁻²,
+> 1 kpc = 3.0856×10¹⁹ m, 1 M⊙ = 1.989×10³⁰ kg.
 
 With G = 1, length unit = 3.5 kpc and mass unit = 5.6×10¹⁰ M⊙, requiring
 G to take its SI value fixes
@@ -59,6 +71,10 @@ Hence tstop = 100 ≈ **1.30 Gyr**, and the leapfrog step dt = 0.125 ≈
 1.63 Myr.
 
 ## Q4 — Profiles in physical units
+
+> **Q4.** Plot the circular-velocity / cumulative-mass /
+> surface-density figure using physical units: km/s, solar masses and
+> solar masses per square parsec.
 
 `disk_profiles.py` reproduces the manual's `plotvcirc` analysis directly
 from the particles and plots, in km/s / M⊙ / M⊙ pc⁻²:
@@ -89,6 +105,9 @@ small-r shot noise.
 
 ## Q5 — How did the system change, t = 0 → t = 100 (baseline, N=20k, ε=0.1)
 
+> **Q5.** Repeating the analysis at t = 100: how did the system
+> properties change?
+
 | quantity | t = 0 | t = 100 | change |
 |---|---|---|---|
 | peak v_c | 236.7 km/s | 244.2 km/s | +3 % |
@@ -112,6 +131,9 @@ N-scaling test confirming this is finite-N noise, and the literature
 placement are in `NOTES_DISK_HEATING.md`.
 
 ## Q6 — Effect of the softening: ε = 0.1 vs ε = 10⁻⁴
+
+> **Q6.** Rerunning with the gravitational softening reduced to
+> ε = 10⁻⁴ (basename SPIRALA000): what has changed?
 
 The softening ε guarantees the validity of the collisionless Boltzmann
 equation: it caps the maximum two-body acceleration so that the

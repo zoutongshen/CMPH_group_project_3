@@ -10,6 +10,14 @@ integrator is leapfrog with a fixed step Δt = 0.125 code units
 
 ## Q8 — Total mass, half-mass radius and dynamical time of the disk
 
+> **Q8.** The surface density of the initial disk is
+> Σ = Σ₀ exp(−r/r_d), with r_d the exponential scale length. What is
+> the total mass of the disk? For disk systems the dynamical time is
+> the rotation period at the half-mass radius of the disk — compute
+> the half-mass radius and the dynamical time for the initial disk
+> component. What fraction of the dynamical time is the integration
+> time-step of the leapfrog integrator we have used?
+
 **Total mass.** Integrating the exponential surface density over the
 plane,
 
@@ -51,6 +59,16 @@ disk's bulk dynamics are very well time-resolved.
 
 ## Q9 — Equation of motion in a homogeneous sphere; remnant t_dyn
 
+> **Q9.** For a homogeneous sphere of constant density ρ the enclosed
+> mass is M(r) = (4/3)πr³ρ. What is the orbital period of a mass on a
+> circular orbit? What is the equation of motion for a test particle
+> released from rest at radius r in its gravitational field? How long
+> does the particle need to reach r = 0? (This time-scale defines the
+> dynamical time of a mostly-spherical system of mean density ρ.)
+> Estimate the dynamical time (in physical units) of the total merger
+> remnant at radii 0.5, 1, 3 and 5 kpc. How does it compare to the
+> fixed integration time-step?
+
 For a uniform sphere of density ρ the enclosed mass is
 M(<r) = (4/3)π r³ ρ, so a test particle **released from rest** at radius
 r feels
@@ -91,6 +109,10 @@ exists there to integrate.
 
 ## Q10 — Bulge half-mass radius, dynamical time, resolvability
 
+> **Q10.** Compute the half-mass radius of the bulge component of the
+> disk model. What is the dynamical time of the bulge at this radius?
+> Can we resolve bulge dynamics with the simulations performed here?
+
 The bulge is a Hernquist sphere, M(<r) = M_b r²/(r+a)², with
 a = 0.1 code = 0.35 kpc. Setting r²/(r+a)² = ½ gives
 **r_h = (1+√2) a = 0.241 code = 0.845 kpc**.
@@ -126,6 +148,10 @@ be treated as qualitative, not quantitative.
 ---
 
 ## Q11
+
+> **Q11.** Request to report errors, typos, or difficulties, and to
+> suggest improvements to the exercise (personally or to
+> naab@usm.lmu.de).
 
 Q11 is the manual's request for feedback to the author
 (naab@usm.lmu.de) — no scientific deliverable.
