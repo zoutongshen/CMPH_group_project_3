@@ -82,8 +82,8 @@ def render_grid(
     star_galaxy = galaxy_id[stars]
 
     rng = np.random.default_rng(0)
-    first_galaxy = np.flatnonzero(star_galaxy == 0)
-    second_galaxy = np.flatnonzero(star_galaxy == 1)
+    galaxy_colours = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
+    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
 
     def decimate(indices: np.ndarray) -> np.ndarray:
         if indices.size <= max_points_per_galaxy:
@@ -92,8 +92,10 @@ def render_grid(
             rng.choice(indices.size, size=max_points_per_galaxy, replace=False)
         ]
 
-    show_first = decimate(first_galaxy)
-    show_second = decimate(second_galaxy)
+    show_per_galaxy = {
+        gid: decimate(np.flatnonzero(star_galaxy == gid))
+        for gid in unique_galaxies
+    }
 
     figure, axes = plt.subplots(
         2, len(times_code),
@@ -110,16 +112,15 @@ def render_grid(
         # Row 0: face-on (x-y); row 1: edge-on (x-z).
         for row, vertical_axis in enumerate((1, 2)):
             axis = axes[row, col]
-            axis.scatter(
-                positions[show_first, 0],
-                positions[show_first, vertical_axis],
-                s=0.4, c="#5fa8ff", alpha=0.45, linewidths=0.0,
-            )
-            axis.scatter(
-                positions[show_second, 0],
-                positions[show_second, vertical_axis],
-                s=0.4, c="#ff7a5f", alpha=0.45, linewidths=0.0,
-            )
+            for gid in unique_galaxies:
+                indices = show_per_galaxy[gid]
+                axis.scatter(
+                    positions[indices, 0],
+                    positions[indices, vertical_axis],
+                    s=0.4,
+                    c=galaxy_colours[gid % len(galaxy_colours)],
+                    alpha=0.45, linewidths=0.0,
+                )
             axis.set_xlim(-view_kpc, view_kpc)
             axis.set_ylim(-view_kpc, view_kpc)
             axis.set_aspect("equal")

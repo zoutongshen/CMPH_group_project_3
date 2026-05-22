@@ -84,14 +84,17 @@ def merger_movie(
     frame_indices = range(0, positions_history.shape[0], frame_stride)
 
     rng = np.random.default_rng(0)
-    first_galaxy = np.flatnonzero(star_galaxy == 0)
-    second_galaxy = np.flatnonzero(star_galaxy == 1)
-    show_first = first_galaxy[
-        decimated_indices(first_galaxy.size, max_points_per_galaxy, rng)
-    ]
-    show_second = second_galaxy[
-        decimated_indices(second_galaxy.size, max_points_per_galaxy, rng)
-    ]
+    galaxy_colours = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
+    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
+    show_per_galaxy = {
+        gid: np.flatnonzero(star_galaxy == gid)[
+            decimated_indices(
+                int((star_galaxy == gid).sum()),
+                max_points_per_galaxy, rng,
+            )
+        ]
+        for gid in unique_galaxies
+    }
 
     figure, (axis_face, axis_edge) = plt.subplots(1, 2, figsize=(15, 7.5))
     for axis, vertical_label in ((axis_face, "y"), (axis_edge, "z")):
@@ -106,12 +109,12 @@ def merger_movie(
 
     scatters = {}
     for axis, vertical in ((axis_face, 1), (axis_edge, 2)):
-        scatters[(id(axis), "g1")] = axis.scatter(
-            [], [], s=0.6, c="#5fa8ff", alpha=0.5, linewidths=0.0
-        )
-        scatters[(id(axis), "g2")] = axis.scatter(
-            [], [], s=0.6, c="#ff7a5f", alpha=0.5, linewidths=0.0
-        )
+        for gid in unique_galaxies:
+            scatters[(id(axis), gid)] = axis.scatter(
+                [], [], s=0.6,
+                c=galaxy_colours[gid % len(galaxy_colours)],
+                alpha=0.5, linewidths=0.0,
+            )
         scatters[(id(axis), "vertical")] = vertical
     title = figure.suptitle("")
 
@@ -122,17 +125,14 @@ def merger_movie(
         ) * units.length_kpc
         for axis in (axis_face, axis_edge):
             vertical = scatters[(id(axis), "vertical")]
-            scatters[(id(axis), "g1")].set_offsets(
-                np.column_stack([
-                    positions[show_first, 0], positions[show_first, vertical]
-                ])
-            )
-            scatters[(id(axis), "g2")].set_offsets(
-                np.column_stack([
-                    positions[show_second, 0],
-                    positions[show_second, vertical]
-                ])
-            )
+            for gid in unique_galaxies:
+                indices = show_per_galaxy[gid]
+                scatters[(id(axis), gid)].set_offsets(
+                    np.column_stack([
+                        positions[indices, 0],
+                        positions[indices, vertical],
+                    ])
+                )
         gigayears = times[frame_index] * units.time_year / 1.0e9
         title.set_text(
             f"t = {times[frame_index]:.0f}  ({gigayears:.2f} Gyr)   "
