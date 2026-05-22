@@ -39,6 +39,7 @@ def run_merger(
     pericentre: float,
     inclination_degrees: float,
     num_dumps: int,
+    collision_axis: str = "x",
 ) -> dict:
     """
     Build the two-galaxy IC and integrate it to coalescence.
@@ -66,6 +67,7 @@ def run_merger(
             separation=separation,
             pericentre=pericentre,
             inclination_degrees=inclination_degrees,
+            collision_axis=collision_axis,
         )
     )
     num_steps = int(round(tstop / timestep))
@@ -104,6 +106,7 @@ def run_merger(
         "separation": separation,
         "pericentre": pericentre,
         "inclination_degrees": inclination_degrees,
+        "collision_axis": collision_axis,
         "seed": seed,
     }
 
@@ -124,6 +127,10 @@ def parse_command_line() -> argparse.Namespace:
     parser.add_argument("--pericentre", type=float, default=5.0)
     parser.add_argument("--inclination", type=float, default=30.0)
     parser.add_argument("--num-dumps", type=int, default=200)
+    parser.add_argument(
+        "--collision-axis", choices=("x", "z"), default="x",
+        help="axis along which the galaxies approach (default: x)",
+    )
     parser.add_argument(
         "--out", type=str, default="data/merger_N40k_eps01.npz",
         help="output .npz path for the trajectory",
@@ -149,6 +156,7 @@ def main() -> None:
         pericentre=args.pericentre,
         inclination_degrees=args.inclination,
         num_dumps=args.num_dumps,
+        collision_axis=args.collision_axis,
     )
     np.savez_compressed(args.out, **result)
     print(f"Saved trajectory to {args.out}")

@@ -91,23 +91,38 @@ def make_merger_initial_conditions(
     separation: float = 30.0,
     pericentre: float = 5.0,
     inclination_degrees: float = 30.0,
+    collision_axis: str = "x",
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Build the full two-galaxy merger IC.
 
-    Galaxy 1 uses ``params`` and lies in the x-y (orbital) plane; galaxy 2
-    uses ``params_2`` (defaulting to ``params`` for the equal-mass case)
-    and is inclined by ``inclination_degrees`` about the y axis (same spin
-    sense). The pair is placed on a parabolic two-body encounter orbit
-    with the given initial ``separation`` and ``pericentre``. For unequal
-    masses the centre-of-mass split of position and velocity is mass-ratio
-    weighted, so the system carries exactly zero net momentum and the
-    relative orbit matches the prescribed parabolic trajectory.
+    Galaxy 1 uses ``params`` and is built with its disk in the x-y plane;
+    galaxy 2 uses ``params_2`` (defaulting to ``params`` for the equal-mass
+    case) and is inclined by ``inclination_degrees`` about the y axis (same
+    spin sense). The pair is placed on a parabolic two-body encounter orbit
+    with the given initial ``separation`` and ``pericentre``.
+
+    ``collision_axis`` controls the axis along which the two galaxies
+    approach:
+      - ``"x"`` (default): separation along x, tangential along y, so
+        the orbit lies in the x-y plane (the same plane as the disks).
+      - ``"z"``: separation along z, tangential along x, so the orbit
+        lies in the x-z plane and the two disks (still in x-y) approach
+        each other face-on along their spin axis.
+
+    For unequal masses the centre-of-mass split of position and velocity
+    is mass-ratio weighted, so the system carries exactly zero net
+    momentum and the relative orbit matches the prescribed parabolic
+    trajectory.
 
     Returns:
         positions, velocities, masses, galaxy_id  (galaxy_id is 0 for the
         first galaxy's particles, 1 for the second's).
     """
+    if collision_axis not in ("x", "z"):
+        raise ValueError(
+            f"collision_axis must be 'x' or 'z', got {collision_axis!r}"
+        )
     if params_2 is None:
         params_2 = params
 
@@ -152,11 +167,18 @@ def make_merger_initial_conditions(
     # Place each galaxy at its mass-weighted centre-of-mass offset and give
     # it the mass-weighted share of the relative velocity, so the net
     # momentum is exactly zero. Equal masses reduce to a 50/50 split.
-    relative_velocity = np.array(
-        [radial_velocity, tangential_velocity, 0.0]
-    )
-    positions_1 = positions_1 + np.array([fraction_1 * separation, 0.0, 0.0])
-    positions_2 = positions_2 - np.array([fraction_2 * separation, 0.0, 0.0])
+    if collision_axis == "x":
+        position_unit = np.array([1.0, 0.0, 0.0])
+        relative_velocity = np.array(
+            [radial_velocity, tangential_velocity, 0.0]
+        )
+    else:  # "z"
+        position_unit = np.array([0.0, 0.0, 1.0])
+        relative_velocity = np.array(
+            [tangential_velocity, 0.0, radial_velocity]
+        )
+    positions_1 = positions_1 + fraction_1 * separation * position_unit
+    positions_2 = positions_2 - fraction_2 * separation * position_unit
     velocities_1 = velocities_1 + fraction_1 * relative_velocity
     velocities_2 = velocities_2 - fraction_2 * relative_velocity
 
