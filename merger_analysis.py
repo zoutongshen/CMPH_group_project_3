@@ -41,11 +41,39 @@ def stellar_mask(
     The merger IC stacks galaxy 1 then galaxy 2; within each galaxy the
     order is disk, bulge, halo. The halo is dark and excluded so the
     profiles compare with observable starlight.
+
+    Assumes the equal-mass case (both galaxies have the same component
+    counts). For unequal-mass / three-galaxy trajectories use
+    :func:`robust_stellar_mask`.
     """
     per_galaxy = num_disk + num_bulge + num_halo
     mask = np.zeros(2 * per_galaxy, dtype=bool)
     for galaxy_start in (0, per_galaxy):
         mask[galaxy_start : galaxy_start + num_disk + num_bulge] = True
+    return mask
+
+
+def robust_stellar_mask(
+    galaxy_id: np.ndarray,
+    num_disk: int,
+    num_bulge: int,
+    num_halo: int,
+) -> np.ndarray:
+    """
+    Stellar (disk + bulge) mask that handles any number of galaxies and
+    unequal-mass mergers, in which only galaxy 1's component counts are
+    stored in the trajectory metadata. Assumes each galaxy's particles
+    are contiguous in the array (disk, bulge, halo in that order, as
+    produced by make_galaxy_initial_conditions) and that the disk:bulge:
+    halo ratio is preserved when total mass is scaled.
+    """
+    reference_per_galaxy = num_disk + num_bulge + num_halo
+    stellar_fraction = (num_disk + num_bulge) / reference_per_galaxy
+    mask = np.zeros(galaxy_id.size, dtype=bool)
+    for gid in np.unique(galaxy_id):
+        indices = np.flatnonzero(galaxy_id == gid)
+        n_stellar = int(round(stellar_fraction * indices.size))
+        mask[indices[:n_stellar]] = True
     return mask
 
 

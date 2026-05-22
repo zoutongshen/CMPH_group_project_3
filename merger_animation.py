@@ -31,7 +31,7 @@ import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 
-from merger_analysis import stellar_mask
+from merger_analysis import robust_stellar_mask, stellar_mask
 from physical_units import milky_way_unit_system
 
 
@@ -79,7 +79,7 @@ def merger_movie(
     num_bulge = int(trajectory["num_bulge"])
     num_halo = int(trajectory["num_halo"])
 
-    stars = stellar_mask(num_disk, num_bulge, num_halo)
+    stars = robust_stellar_mask(galaxy_id, num_disk, num_bulge, num_halo)
     star_galaxy = galaxy_id[stars]
     frame_indices = range(0, positions_history.shape[0], frame_stride)
 
