@@ -14,6 +14,20 @@ source "$VENV_PATH/bin/activate"
 mkdir -p figures
 echo "=== scan_gif_runner started at $(date) ==="
 
+subfolder_for() {
+    # Map npz filename to its visualisation subfolder.
+    local stem="$1"
+    case "$stem" in
+        scan_peri*)        echo "pericentre_scan" ;;
+        scan_incl*)        echo "inclination_scan" ;;
+        multi_unequal_*)   echo "mass_ratio_scan" ;;
+        multi_three_*)     echo "three_galaxy" ;;
+        merger_N*|merger_test*) echo "baseline_merger" ;;
+        z_*|multi_zaxis_*) echo "z_axis" ;;
+        *)                 echo "" ;;
+    esac
+}
+
 animate_one() {
     local npz="$1"
     if [[ ! -f "$npz" ]]; then
@@ -29,7 +43,14 @@ animate_one() {
     fi
     local stem
     stem="$(basename "$npz" .npz)"
-    local gif="figures/${stem}.gif"
+    local subfolder
+    subfolder="$(subfolder_for "$stem")"
+    if [[ -z "$subfolder" ]]; then
+        echo "[skip] $stem has no configured subfolder"
+        return
+    fi
+    mkdir -p "figures/$subfolder"
+    local gif="figures/${subfolder}/${stem}.gif"
     if [[ -f "$gif" ]]; then
         echo "[skip] $gif already exists"
         return
@@ -41,15 +62,23 @@ animate_one() {
 
 # Pericentre scan
 animate_one data/scan_peri1.npz
-animate_one data/merger_N40k_eps01.npz    # default = peri 5
+animate_one data/merger_N40k_eps01.npz    # default = peri 5 (lands in baseline_merger/)
 animate_one data/scan_peri10.npz
 animate_one data/scan_peri20.npz
 
 # Inclination scan
 animate_one data/scan_incl0.npz
-# default = incl 30 (same file as peri 5, already animated)
+# default = incl 30 (same file as peri 5, already animated above)
 animate_one data/scan_incl60.npz
 animate_one data/scan_incl90.npz
 animate_one data/scan_incl180.npz
+
+# Mass-ratio scan
+animate_one data/multi_unequal_1to2.npz
+animate_one data/multi_unequal_1to4.npz
+animate_one data/multi_unequal_1to8.npz
+
+# Three-galaxy run
+animate_one data/multi_three_default.npz
 
 echo "=== scan_gif_runner finished at $(date) ==="
