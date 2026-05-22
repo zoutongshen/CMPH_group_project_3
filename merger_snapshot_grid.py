@@ -1,0 +1,169 @@
+"""
+4-panel grid showing the merger morphology at key moments.
+
+Renders a single PNG with face-on views of the merger at four times:
+``before`` (well-separated), ``bridge`` (close passage forming the
+inter-galaxy bridge), ``tail`` (post-pericentre with extended tidal
+tails), ``after`` (late-time damped orbit / coalescence). Stellar
+particles (disk + bulge) only; halo is excluded so the visible
+morphology is what an observer would see.
+
+Run as a script:
+    python merger_snapshot_grid.py data/merger_N160k_eps01.npz
+    python merger_snapshot_grid.py data/merger_N160k_eps01.npz \\
+        --times 0 25.5 45 150 --view-kpc 90
+
+CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
+"""
+
+import argparse
+from typing import Sequence
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+from merger_analysis import stellar_mask
+from physical_units import milky_way_unit_system
+
+
+def nearest_snapshot_index(
+    snapshot_times: np.ndarray, target_time: float
+) -> int:
+    """Return the index of the snapshot closest to ``target_time``."""
+    return int(np.argmin(np.abs(snapshot_times - target_time)))
+
+
+def render_grid(
+    trajectory: dict,
+    output_path: str,
+    *,
+    times_code: Sequence[float],
+    labels: Sequence[str],
+    view_kpc: float,
+    max_points_per_galaxy: int,
+) -> None:
+    """Build the 4-panel figure and write it to ``output_path``."""
+    units = milky_way_unit_system()
+    positions_history = trajectory["positions_history"]
+    galaxy_id = trajectory["galaxy_id"]
+    snapshot_times = trajectory["snapshot_times"]
+    num_disk = int(trajectory["num_disk"])
+    num_bulge = int(trajectory["num_bulge"])
+    num_halo = int(trajectory["num_halo"])
+
+    stars = stellar_mask(num_disk, num_bulge, num_halo)
+    star_galaxy = galaxy_id[stars]
+
+    rng = np.random.default_rng(0)
+    first_galaxy = np.flatnonzero(star_galaxy == 0)
+    second_galaxy = np.flatnonzero(star_galaxy == 1)
+
+    def decimate(indices: np.ndarray) -> np.ndarray:
+        if indices.size <= max_points_per_galaxy:
+            return indices
+        return indices[
+            rng.choice(indices.size, size=max_points_per_galaxy, replace=False)
+        ]
+
+    show_first = decimate(first_galaxy)
+    show_second = decimate(second_galaxy)
+
+    figure, axes = plt.subplots(1, len(times_code), figsize=(4.5 * len(times_code), 5.0))
+    figure.patch.set_facecolor("#0a0a0a")
+
+    for axis, target_t, label in zip(axes, times_code, labels):
+        index = nearest_snapshot_index(snapshot_times, target_t)
+        actual_t = float(snapshot_times[index])
+        gigayears = actual_t * units.time_year / 1.0e9
+
+        positions = positions_history[index][stars].astype(np.float64) * units.length_kpc
+
+        axis.scatter(
+            positions[show_first, 0],
+            positions[show_first, 1],
+            s=0.4,
+            c="#5fa8ff",
+            alpha=0.45,
+            linewidths=0.0,
+        )
+        axis.scatter(
+            positions[show_second, 0],
+            positions[show_second, 1],
+            s=0.4,
+            c="#ff7a5f",
+            alpha=0.45,
+            linewidths=0.0,
+        )
+
+        axis.set_xlim(-view_kpc, view_kpc)
+        axis.set_ylim(-view_kpc, view_kpc)
+        axis.set_aspect("equal")
+        axis.set_facecolor("#0a0a0a")
+        axis.tick_params(colors="#cccccc", labelsize=8)
+        for spine in axis.spines.values():
+            spine.set_color("#444444")
+        axis.set_xlabel("x  [kpc]", color="#cccccc", fontsize=9)
+        axis.set_ylabel("y  [kpc]", color="#cccccc", fontsize=9)
+        axis.set_title(
+            f"{label}\nt = {actual_t:.1f}  ({gigayears:.2f} Gyr)",
+            color="#ffffff",
+            fontsize=11,
+        )
+
+    plt.tight_layout()
+    figure.savefig(output_path, dpi=130, facecolor=figure.get_facecolor())
+    plt.close(figure)
+    print(f"Saved {output_path}")
+
+
+def main() -> None:
+    """Parse CLI args and render the grid."""
+    parser = argparse.ArgumentParser(
+        description="4-panel merger morphology grid (face-on)."
+    )
+    parser.add_argument("trajectory", type=str)
+    parser.add_argument(
+        "--times",
+        type=float,
+        nargs=4,
+        default=[0.0, 25.5, 45.0, 150.0],
+        help="four code-time targets: before bridge tail after",
+    )
+    parser.add_argument(
+        "--labels",
+        type=str,
+        nargs=4,
+        default=["Before", "Bridge (pericentre)", "Tail", "After"],
+    )
+    parser.add_argument("--view-kpc", type=float, default=90.0)
+    parser.add_argument("--max-points", type=int, default=30000)
+    parser.add_argument(
+        "--out",
+        type=str,
+        default="",
+        help="output PNG (default: figures/<trajectory-stem>_4panel.png)",
+    )
+    args = parser.parse_args()
+
+    trajectory = np.load(args.trajectory)
+    if args.out:
+        output_path = args.out
+    else:
+        stem = args.trajectory.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+        output_path = f"figures/{stem}_4panel.png"
+
+    render_grid(
+        trajectory,
+        output_path,
+        times_code=args.times,
+        labels=args.labels,
+        view_kpc=args.view_kpc,
+        max_points_per_galaxy=args.max_points,
+    )
+
+
+if __name__ == "__main__":
+    main()
