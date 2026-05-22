@@ -27,7 +27,7 @@ CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
 import argparse
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -86,6 +86,7 @@ def two_body_encounter_velocity(
 def make_merger_initial_conditions(
     params: GalaxyParams,
     *,
+    params_2: Optional[GalaxyParams] = None,
     seed: int = 0,
     separation: float = 30.0,
     pericentre: float = 5.0,
@@ -94,21 +95,27 @@ def make_merger_initial_conditions(
     """
     Build the full two-galaxy merger IC.
 
-    Galaxy 1 lies in the x-y (orbital) plane; galaxy 2 is an independent
-    random realisation of the same model, inclined by
-    ``inclination_degrees`` about the y axis (same spin sense). The pair
-    is placed on a parabolic encounter orbit with the given initial
-    ``separation`` and ``pericentre`` (all in code units).
+    Galaxy 1 uses ``params`` and lies in the x-y (orbital) plane; galaxy 2
+    uses ``params_2`` (defaulting to ``params`` for the equal-mass case)
+    and is inclined by ``inclination_degrees`` about the y axis (same spin
+    sense). The pair is placed on a parabolic two-body encounter orbit
+    with the given initial ``separation`` and ``pericentre``. For unequal
+    masses the centre-of-mass split of position and velocity is mass-ratio
+    weighted, so the system carries exactly zero net momentum and the
+    relative orbit matches the prescribed parabolic trajectory.
 
     Returns:
         positions, velocities, masses, galaxy_id  (galaxy_id is 0 for the
         first galaxy's particles, 1 for the second's).
     """
+    if params_2 is None:
+        params_2 = params
+
     positions_1, velocities_1, masses_1 = make_galaxy_initial_conditions(
         params=params, seed=seed
     )
     positions_2, velocities_2, masses_2 = make_galaxy_initial_conditions(
-        params=params, seed=seed + 7919
+        params=params_2, seed=seed + 7919
     )
 
     # Incline the second galaxy (positions and velocities rotate together).
@@ -116,9 +123,13 @@ def make_merger_initial_conditions(
     positions_2 = positions_2 @ tilt.T
     velocities_2 = velocities_2 @ tilt.T
 
-    galaxy_mass = float(masses_1.sum())
+    mass_1 = float(masses_1.sum())
+    mass_2 = float(masses_2.sum())
+    total_mass = mass_1 + mass_2
+    fraction_1 = mass_2 / total_mass  # galaxy 1 sits at +fraction_1 * separation
+    fraction_2 = mass_1 / total_mass  # galaxy 2 sits at -fraction_2 * separation
     radial_velocity, tangential_velocity = two_body_encounter_velocity(
-        2.0 * galaxy_mass, separation, pericentre
+        total_mass, separation, pericentre
     )
 
     # Each galaxy is an independent finite-N realisation, so it carries a
@@ -138,17 +149,16 @@ def make_merger_initial_conditions(
             velocities * component_masses[:, None]
         ).sum(axis=0) / total
 
-    # Equal masses: place symmetrically about the centre of mass and give
-    # each half of the relative velocity, so net momentum is zero.
-    centre_offset = np.array([0.5 * separation, 0.0, 0.0])
+    # Place each galaxy at its mass-weighted centre-of-mass offset and give
+    # it the mass-weighted share of the relative velocity, so the net
+    # momentum is exactly zero. Equal masses reduce to a 50/50 split.
     relative_velocity = np.array(
         [radial_velocity, tangential_velocity, 0.0]
     )
-
-    positions_1 = positions_1 + centre_offset
-    positions_2 = positions_2 - centre_offset
-    velocities_1 = velocities_1 + 0.5 * relative_velocity
-    velocities_2 = velocities_2 - 0.5 * relative_velocity
+    positions_1 = positions_1 + np.array([fraction_1 * separation, 0.0, 0.0])
+    positions_2 = positions_2 - np.array([fraction_2 * separation, 0.0, 0.0])
+    velocities_1 = velocities_1 + fraction_1 * relative_velocity
+    velocities_2 = velocities_2 - fraction_2 * relative_velocity
 
     positions = np.vstack([positions_1, positions_2])
     velocities = np.vstack([velocities_1, velocities_2])
