@@ -118,51 +118,58 @@ def build_master_animation(
     master_times = np.linspace(0.0, master_tstop, frames)
 
     figure, axes = plt.subplots(
-        1, len(loaded),
-        figsize=(4.5 * len(loaded), 5.0),
+        2, len(loaded),
+        figsize=(4.5 * len(loaded), 9.5),
+        squeeze=False,
     )
-    if len(loaded) == 1:
-        axes = np.array([axes])
     figure.patch.set_facecolor("#0a0a0a")
 
-    scatters_by_axis = []
-    for axis, traj in zip(axes, loaded):
-        axis.set_xlim(-view_kpc, view_kpc)
-        axis.set_ylim(-view_kpc, view_kpc)
-        axis.set_aspect("equal")
-        axis.set_facecolor("#0a0a0a")
-        axis.tick_params(colors="#888888", labelsize=7)
-        for spine in axis.spines.values():
-            spine.set_color("#444444")
-        axis.set_xlabel("x  [kpc]", color="#cccccc", fontsize=8)
-        axis.set_title(traj["label"], color="#ffffff", fontsize=10)
+    # axes[0, col] is face-on (vertical_axis = 1, y); axes[1, col] is edge-on (vertical_axis = 2, z).
+    scatters_by_column = []
+    for col, traj in enumerate(loaded):
+        per_column = {}
+        for row, vertical_axis in enumerate((1, 2)):
+            axis = axes[row, col]
+            axis.set_xlim(-view_kpc, view_kpc)
+            axis.set_ylim(-view_kpc, view_kpc)
+            axis.set_aspect("equal")
+            axis.set_facecolor("#0a0a0a")
+            axis.tick_params(colors="#888888", labelsize=7)
+            for spine in axis.spines.values():
+                spine.set_color("#444444")
+            per_column[vertical_axis] = {}
+            for gid in traj["unique_galaxies"]:
+                per_column[vertical_axis][gid] = axis.scatter(
+                    [], [], s=0.5,
+                    c=GALAXY_COLOURS[gid % len(GALAXY_COLOURS)],
+                    alpha=0.5, linewidths=0.0,
+                )
+        axes[0, col].set_title(traj["label"], color="#ffffff", fontsize=10)
+        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=8)
+        scatters_by_column.append(per_column)
 
-        scatters = {}
-        for gid in traj["unique_galaxies"]:
-            scatters[gid] = axis.scatter(
-                [], [], s=0.5,
-                c=GALAXY_COLOURS[gid % len(GALAXY_COLOURS)],
-                alpha=0.5, linewidths=0.0,
-            )
-        scatters_by_axis.append(scatters)
-
-    axes[0].set_ylabel("y  [kpc]", color="#cccccc", fontsize=8)
+    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=9)
+    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=9)
     title = figure.suptitle("", color="#ffffff", fontsize=11)
 
     def update(frame_index: int):
         master_t = master_times[frame_index]
         gigayears = master_t * units.time_year / 1.0e9
-        for traj, scatters in zip(loaded, scatters_by_axis):
+        for traj, per_column in zip(loaded, scatters_by_column):
             snap = int(np.argmin(np.abs(traj["snapshot_times"] - master_t)))
             positions = (
                 traj["positions_history"][snap][traj["stars"]].astype(np.float64)
                 * units.length_kpc
             )
-            for gid in traj["unique_galaxies"]:
-                indices = traj["show_per_galaxy"][gid]
-                scatters[gid].set_offsets(
-                    np.column_stack([positions[indices, 0], positions[indices, 1]])
-                )
+            for vertical_axis, scatters in per_column.items():
+                for gid in traj["unique_galaxies"]:
+                    indices = traj["show_per_galaxy"][gid]
+                    scatters[gid].set_offsets(
+                        np.column_stack([
+                            positions[indices, 0],
+                            positions[indices, vertical_axis],
+                        ])
+                    )
         title.set_text(f"t = {master_t:.1f}  ({gigayears:.2f} Gyr)")
         return ()
 
