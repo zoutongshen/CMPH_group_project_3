@@ -29,6 +29,30 @@ from merger_analysis import stellar_mask
 from physical_units import milky_way_unit_system
 
 
+def robust_stellar_mask(
+    galaxy_id: np.ndarray,
+    num_disk: int,
+    num_bulge: int,
+    num_halo: int,
+) -> np.ndarray:
+    """
+    Stellar (disk + bulge) mask that handles any number of galaxies and
+    unequal-mass mergers, in which only galaxy 1's component counts are
+    stored in the trajectory metadata. Assumes each galaxy's particles
+    are contiguous in the array (disk, bulge, halo in that order, as
+    produced by make_galaxy_initial_conditions) and that the disk:bulge:
+    halo ratio is preserved when total mass is scaled.
+    """
+    reference_per_galaxy = num_disk + num_bulge + num_halo
+    stellar_fraction = (num_disk + num_bulge) / reference_per_galaxy
+    mask = np.zeros(galaxy_id.size, dtype=bool)
+    for gid in np.unique(galaxy_id):
+        indices = np.flatnonzero(galaxy_id == gid)
+        n_stellar = int(round(stellar_fraction * indices.size))
+        mask[indices[:n_stellar]] = True
+    return mask
+
+
 def nearest_snapshot_index(
     snapshot_times: np.ndarray, target_time: float
 ) -> int:
@@ -54,7 +78,7 @@ def render_grid(
     num_bulge = int(trajectory["num_bulge"])
     num_halo = int(trajectory["num_halo"])
 
-    stars = stellar_mask(num_disk, num_bulge, num_halo)
+    stars = robust_stellar_mask(galaxy_id, num_disk, num_bulge, num_halo)
     star_galaxy = galaxy_id[stars]
 
     rng = np.random.default_rng(0)
@@ -71,47 +95,47 @@ def render_grid(
     show_first = decimate(first_galaxy)
     show_second = decimate(second_galaxy)
 
-    figure, axes = plt.subplots(1, len(times_code), figsize=(4.5 * len(times_code), 5.0))
+    figure, axes = plt.subplots(
+        2, len(times_code),
+        figsize=(4.5 * len(times_code), 9.5),
+    )
     figure.patch.set_facecolor("#0a0a0a")
 
-    for axis, target_t, label in zip(axes, times_code, labels):
+    for col, (target_t, label) in enumerate(zip(times_code, labels)):
         index = nearest_snapshot_index(snapshot_times, target_t)
         actual_t = float(snapshot_times[index])
         gigayears = actual_t * units.time_year / 1.0e9
-
         positions = positions_history[index][stars].astype(np.float64) * units.length_kpc
 
-        axis.scatter(
-            positions[show_first, 0],
-            positions[show_first, 1],
-            s=0.4,
-            c="#5fa8ff",
-            alpha=0.45,
-            linewidths=0.0,
-        )
-        axis.scatter(
-            positions[show_second, 0],
-            positions[show_second, 1],
-            s=0.4,
-            c="#ff7a5f",
-            alpha=0.45,
-            linewidths=0.0,
-        )
+        # Row 0: face-on (x-y); row 1: edge-on (x-z).
+        for row, vertical_axis in enumerate((1, 2)):
+            axis = axes[row, col]
+            axis.scatter(
+                positions[show_first, 0],
+                positions[show_first, vertical_axis],
+                s=0.4, c="#5fa8ff", alpha=0.45, linewidths=0.0,
+            )
+            axis.scatter(
+                positions[show_second, 0],
+                positions[show_second, vertical_axis],
+                s=0.4, c="#ff7a5f", alpha=0.45, linewidths=0.0,
+            )
+            axis.set_xlim(-view_kpc, view_kpc)
+            axis.set_ylim(-view_kpc, view_kpc)
+            axis.set_aspect("equal")
+            axis.set_facecolor("#0a0a0a")
+            axis.tick_params(colors="#cccccc", labelsize=8)
+            for spine in axis.spines.values():
+                spine.set_color("#444444")
 
-        axis.set_xlim(-view_kpc, view_kpc)
-        axis.set_ylim(-view_kpc, view_kpc)
-        axis.set_aspect("equal")
-        axis.set_facecolor("#0a0a0a")
-        axis.tick_params(colors="#cccccc", labelsize=8)
-        for spine in axis.spines.values():
-            spine.set_color("#444444")
-        axis.set_xlabel("x  [kpc]", color="#cccccc", fontsize=9)
-        axis.set_ylabel("y  [kpc]", color="#cccccc", fontsize=9)
-        axis.set_title(
+        axes[0, col].set_title(
             f"{label}\nt = {actual_t:.1f}  ({gigayears:.2f} Gyr)",
-            color="#ffffff",
-            fontsize=11,
+            color="#ffffff", fontsize=11,
         )
+        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=9)
+
+    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=10)
+    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=10)
 
     plt.tight_layout()
     figure.savefig(output_path, dpi=130, facecolor=figure.get_facecolor())
