@@ -33,8 +33,9 @@ run_one() {
     echo "[$(date '+%H:%M:%S')] finished zaxis_$label"
 }
 
-run_one i0   --inclination 0.0
-run_one i90  --inclination 90.0
-run_one i180 --inclination 180.0
+run_one i0      --inclination 0.0
+run_one i90     --inclination 90.0
+run_one i180    --inclination 180.0
+run_one headon  --inclination 0.0 --pericentre 0.0      # true head-on smash
 
 echo "=== zaxis_runner finished at $(date) ==="
