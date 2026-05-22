@@ -47,6 +47,12 @@ MULTI_TRAJECTORIES = [
     ("data/multi_unequal_1to8.npz",    "1:8"),
 ]
 
+ZAXIS_TRAJECTORIES = [
+    ("data/multi_zaxis_i0.npz",        r"z-axis, $i = 0\degree$ (face-on)"),
+    ("data/multi_zaxis_i90.npz",       r"z-axis, $i = 90\degree$"),
+    ("data/multi_zaxis_i180.npz",      r"z-axis, $i = 180\degree$ (anti-aligned)"),
+]
+
 
 def nearest_index(snapshot_times: np.ndarray, target_time: float) -> int:
     """Index of the snapshot closest to ``target_time``."""
@@ -179,7 +185,7 @@ def main() -> None:
         description="Scan-comparison grid for orbit extension."
     )
     parser.add_argument(
-        "--kind", choices=("pericentre", "inclination", "multi"),
+        "--kind", choices=("pericentre", "inclination", "multi", "zaxis"),
         default="pericentre",
         help="which parameter scan to plot",
     )
@@ -198,9 +204,12 @@ def main() -> None:
     elif args.kind == "inclination":
         trajectories = INCLINATION_TRAJECTORIES
         default_out = "figures/inclination_scan/scan_inclination_grid.png"
-    else:
+    elif args.kind == "multi":
         trajectories = MULTI_TRAJECTORIES
         default_out = "figures/mass_ratio_scan/multi_unequal_grid.png"
+    else:  # "zaxis"
+        trajectories = ZAXIS_TRAJECTORIES
+        default_out = "figures/z_axis/zaxis_grid.png"
 
     render_grid(
         trajectories,

@@ -81,4 +81,9 @@ animate_one data/multi_unequal_1to8.npz
 # Three-galaxy run
 animate_one data/multi_three_default.npz
 
+# z-axis collision experiments
+animate_one data/multi_zaxis_i0.npz
+animate_one data/multi_zaxis_i90.npz
+animate_one data/multi_zaxis_i180.npz
+
 echo "=== scan_gif_runner finished at $(date) ==="

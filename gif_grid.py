@@ -52,6 +52,12 @@ MULTI_TRAJECTORIES = [
     ("data/multi_unequal_1to8.npz",      "1:8"),
 ]
 
+ZAXIS_TRAJECTORIES = [
+    ("data/multi_zaxis_i0.npz",          r"z-axis, $i = 0\degree$"),
+    ("data/multi_zaxis_i90.npz",         r"z-axis, $i = 90\degree$"),
+    ("data/multi_zaxis_i180.npz",        r"z-axis, $i = 180\degree$"),
+]
+
 
 GALAXY_COLOURS = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
 
@@ -192,7 +198,7 @@ def main() -> None:
         description="Synchronised side-by-side merger animation grid."
     )
     parser.add_argument(
-        "--kind", choices=("pericentre", "inclination", "multi"),
+        "--kind", choices=("pericentre", "inclination", "multi", "zaxis"),
         default="pericentre",
     )
     parser.add_argument("--view-kpc", type=float, default=120.0)
@@ -208,9 +214,12 @@ def main() -> None:
     elif args.kind == "inclination":
         trajectories = INCLINATION_TRAJECTORIES
         default_out = "figures/inclination_scan/scan_inclination_grid.gif"
-    else:
+    elif args.kind == "multi":
         trajectories = MULTI_TRAJECTORIES
         default_out = "figures/mass_ratio_scan/multi_unequal_grid.gif"
+    else:  # "zaxis"
+        trajectories = ZAXIS_TRAJECTORIES
+        default_out = "figures/z_axis/zaxis_grid.gif"
 
     build_master_animation(
         trajectories,
