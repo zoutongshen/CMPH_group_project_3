@@ -20,6 +20,13 @@ animate_one() {
         echo "[skip] $npz not yet available"
         return
     fi
+    # If the file was modified in the last 30 s, the simulator may still
+    # be writing to it -- skip rather than risk a partial-read BadZipFile.
+    # Re-running scan_gif_runner.sh later will pick it up.
+    if find "$npz" -mmin -0.5 2>/dev/null | grep -q .; then
+        echo "[skip] $npz modified within the last 30 s, retry later"
+        return
+    fi
     local stem
     stem="$(basename "$npz" .npz)"
     local gif="figures/${stem}.gif"
