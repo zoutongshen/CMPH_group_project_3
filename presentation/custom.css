@@ -1,0 +1,58 @@
+/* Project 3 deck — projection-legibility tweaks over the reveal "black" theme */
+
+:root {
+  --r-main-font-size: 30px;          /* a touch bigger than default for the back row */
+}
+
+.reveal h1 { font-size: 1.7em; }
+.reveal h2 { font-size: 1.25em; text-transform: none; letter-spacing: -0.01em; }
+.reveal h3 { font-size: 1.0em;  text-transform: none; color: #8fd3ff; }
+
+/* The recurring "axis question" kicker line at the top of each scan slide */
+.reveal .kicker {
+  color: #ffd166;
+  font-size: 0.6em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.2em;
+}
+
+/* Figures: fit-to-slide, no white frame so dark plots blend into the black bg */
+.reveal section img {
+  background: none;
+  border: none;
+  box-shadow: none;
+  max-height: 64vh;
+  width: auto;
+}
+.reveal .fig-tall img  { max-height: 72vh; }
+.reveal .fig-wide img  { max-height: 48vh; width: auto; }
+
+/* Two-column layout helper */
+.reveal .cols { display: flex; gap: 1.2em; align-items: center; justify-content: center; }
+.reveal .cols > div { flex: 1; }
+.reveal .col-narrow { flex: 0 0 38% !important; }
+
+/* Compact bullet lists */
+.reveal ul { display: block; }
+.reveal li { margin-bottom: 0.25em; line-height: 1.25; }
+
+/* Caption under a figure */
+.reveal .caption { font-size: 0.5em; color: #9aa7b4; margin-top: 0.3em; }
+
+/* KaTeX a little smaller so multi-line blocks fit */
+.reveal .katex { font-size: 1.0em; }
+
+/* TODO markers stand out in speaker view but also if shown by accident */
+.reveal .todo { color: #ff7b72; font-style: italic; }
+
+/* Backup-slide banner */
+.reveal .backup-tag {
+  position: absolute; top: 12px; right: 18px;
+  font-size: 0.4em; color: #ff7b72; letter-spacing: 0.1em;
+}
+
+/* Roadmap / synthesis matrix */
+.reveal table.axes { font-size: 0.62em; margin: 0 auto; }
+.reveal table.axes td, .reveal table.axes th { padding: 0.18em 0.6em; }
+.reveal table.axes th { color: #8fd3ff; }

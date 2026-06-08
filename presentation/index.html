@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galaxy–Galaxy Collisions — CMPH Project 3</title>
+
+  <!-- reveal.js core (vendored locally for offline use) -->
+  <link rel="stylesheet" href="reveal/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="reveal/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="reveal/revealjs/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="reveal/revealjs/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="custom.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================= -->
+<!-- 1. TITLE                                          ~0:20  /0:20 -->
+<!-- ============================================================= -->
+<section>
+  <h1>Galaxy–Galaxy Collisions</h1>
+  <h3>A from-scratch self-gravitating N-body study</h3>
+  <p style="margin-top:1em;font-size:0.7em;color:#9aa7b4;">
+    CMPH Project 3 &middot; Group 12
+    <!-- TODO confirm: project_3 group may differ from projects 1/2 -->
+    <br>Zhaoyang Chu (s4390199) &middot; Zoutong Shen (s4879759)
+  </p>
+  <aside class="notes">
+    ⏱ 0:20 (cum 0:20). One breath. "We built a galaxy collision simulator from
+    scratch and used it to map how the collision outcome depends on the orbit."
+    Don't linger — go.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 2. MOTIVATION                                     ~1:00  /1:20 -->
+<!-- ============================================================= -->
+<section>
+  <h2>Galaxies collide — and it shows</h2>
+  <div class="cols">
+    <div>
+      <ul>
+        <li>Tidal <b>tails &amp; bridges</b> — the Antennae, the Mice</li>
+        <li><b>Rings</b> — the Cartwheel</li>
+        <li>Disks → <b>ellipticals</b> after a major merger</li>
+      </ul>
+      <p style="margin-top:0.8em;">Same gravity, wildly different outcomes.</p>
+    </div>
+    <div>
+      <!-- TODO: optional observation image (Antennae / Cartwheel). Source a
+           public-domain HST image or delete this column. Keep it light. -->
+      <p class="todo" style="font-size:0.6em;">[optional: HST Antennae / Cartwheel image, or remove]</p>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 0:50 (cum 1:10). Hook with the real systems. The point of the slide:
+    one force (gravity) produces a zoo of morphologies — what selects which?
+  </aside>
+</section>
+
+<section>
+  <h2>The question, and the plan</h2>
+  <p>Outcome of a collision is set by the <b>encounter geometry</b>. We turn one
+     knob at a time, off a single baseline merger:</p>
+  <table class="axes">
+    <tr><th>Knob</th><th>Question</th></tr>
+    <tr><td>Pericentre</td><td>How close must they pass to merge?</td></tr>
+    <tr><td>Inclination</td><td>Why aren't all mergers the Antennae?</td></tr>
+    <tr><td>Mass ratio</td><td>When does a merger become accretion?</td></tr>
+    <tr><td>Number</td><td>What if it's not just two?</td></tr>
+    <tr><td>Collision axis</td><td>What can a <i>head-on</i> hit do? → a ring</td></tr>
+  </table>
+  <aside class="notes">
+    ⏱ 0:40 (cum 1:50, target ~2:00). This is the roadmap — promise the payoff.
+    "Everything you'll see comes from the same code and the same baseline; only
+    one parameter moves per result."
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 3. METHODS & VALIDATION  (4 slides)               ~4:00  /6:00 -->
+<!-- ============================================================= -->
+<section>
+  <h2>Method I — gravity &amp; integration</h2>
+  <div class="cols">
+    <div>
+      <p>Direct <b>N²</b> gravity, Plummer-softened, Numba-JIT'd:</p>
+      <p>\[ \mathbf a_i = -G\!\!\sum_{j\neq i}\! m_j\,
+            \frac{\mathbf r_i-\mathbf r_j}
+                 {\left(|\mathbf r_i-\mathbf r_j|^2+\varepsilon^2\right)^{3/2}} \]</p>
+      <p>Velocity-Verlet (leapfrog), kick–drift–kick:</p>
+      <p style="font-size:0.85em;">
+        \[ \mathbf v_{1/2}=\mathbf v_0+\tfrac{\Delta t}{2}\mathbf a_0,\quad
+           \mathbf x_1=\mathbf x_0+\Delta t\,\mathbf v_{1/2},\quad
+           \mathbf v_1=\mathbf v_{1/2}+\tfrac{\Delta t}{2}\mathbf a_1 \]</p>
+    </div>
+    <div class="col-narrow">
+      <p style="font-size:0.7em;color:#9aa7b4;">Softening \(\varepsilon\) tames
+        close two-body kicks; leapfrog is symplectic → energy bounded over Gyr
+        integrations.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:00 (cum 3:00). Two ideas only: (1) softened direct sum, (2) symplectic
+    leapfrog so energy doesn't drift. Say "ε is why a 2-body kick can't blow up."
+    <span class="todo">TODO: one sentence on why we chose direct N² over a tree.</span>
+  </aside>
+</section>
+
+<section>
+  <h2>Method II — equilibrium initial conditions</h2>
+  <div class="cols">
+    <div>
+      <p>Hernquist (1993) galaxy: <b>exponential disk + bulge + halo</b>, sampled
+         in equilibrium so an <i>isolated</i> galaxy stays put.</p>
+      <p style="font-size:0.85em;">
+        \[ \Sigma_d(R)=\frac{M_d}{2\pi h^2}e^{-R/h},\qquad
+           \rho_b(r)=\frac{M_b\,a}{2\pi\,r\,(r+a)^3} \]</p>
+      <table class="axes" style="font-size:0.55em;">
+        <tr><th>code unit</th><th>physical</th></tr>
+        <tr><td>\(h=1\)</td><td>3.5 kpc</td></tr>
+        <tr><td>\(M_d=1\)</td><td>\(5.6\times10^{10}\,M_\odot\)</td></tr>
+        <tr><td>\(t=1\)</td><td>13.1 Myr</td></tr>
+        <tr><td>\(v=1\)</td><td>262 km/s</td></tr>
+      </table>
+    </div>
+    <div>
+      <img src="assets/disk_isolation/evolve_N80k_eps01_images.png"
+           alt="face-on and edge-on images of disk/bulge/halo components">
+      <div class="caption">Isolated galaxy, face-on &amp; edge-on (N = 80k).</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:00 (cum 4:00). The hard part isn't the merger — it's building a galaxy
+    that's already in equilibrium. Mention G=1 units, then translate one number
+    to physical (h = 3.5 kpc) so the audience can scale everything later.
+  </aside>
+</section>
+
+<section>
+  <h2>Method III — two tiers</h2>
+  <div class="cols">
+    <div>
+      <p><b>Tier 1</b> — restricted N-body: two point-mass galaxies + massless
+         test stars (Toomre &amp; Toomre style). Fast, no self-gravity.</p>
+      <p><b>Tier 2</b> — full self-gravity: every particle pulls on every other;
+         live disk + bulge + halo. <i>This talk's results.</i></p>
+      <p style="margin-top:0.6em;color:#8fd3ff;">Cross-check: Tier 2 with
+         self-gravity disabled reproduces Tier 1.</p>
+    </div>
+    <div class="col-narrow">
+      <p class="todo" style="font-size:0.6em;">TODO: if Zhaoyang presents his own
+         Tier-1 slot, trim this to one line and hand off here.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:00 (cum 5:00). Frame the division of labour as a validation strategy, not
+    just a task split. The cross-check is the credibility argument.
+    <span class="todo">Confirm with Zhaoyang who says this slide.</span>
+  </aside>
+</section>
+
+<section>
+  <h2>Does the code work?</h2>
+  <div class="cols">
+    <div class="col-narrow">
+      <ul style="font-size:0.85em;">
+        <li><b>Kepler test:</b> 2-body orbit, energy &amp; \(L\) conserved to
+            machine precision.</li>
+        <li><b>Isolated disk:</b> structure must not drift.</li>
+        <li>Vertical heating is <b>finite-N noise</b>, not a bug:</li>
+      </ul>
+      <table class="axes" style="font-size:0.6em;">
+        <tr><th>N</th><th>\(z_0\) drift, \(t{:}0\!\to\!100\)</th></tr>
+        <tr><td>20,000</td><td>67 %</td></tr>
+        <tr><td>80,000</td><td>24 %</td></tr>
+      </table>
+      <p style="font-size:0.62em;color:#9aa7b4;">×4 in N → 0.36× heating, matching
+         \(t_\mathrm{relax}\!\propto\! N/\ln N\). Scale length \(h\) fixed &lt;1%.</p>
+    </div>
+    <div>
+      <img src="assets/disk_isolation/evolve_N80k_eps01_profiles.png"
+           alt="radial profiles of the isolated disk over time">
+      <div class="caption">Component profiles hold over the run (N = 80k).</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:00 (cum 6:00, target 6:00). The "we turned a bug into a result" slide:
+    the disk puffs up, we proved it's two-body relaxation (right N-scaling), not
+    a broken IC. This buys trust for everything after.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 4. BASELINE MERGER + Q7  (2 slides)               ~2:30  /8:30 -->
+<!-- ============================================================= -->
+<section>
+  <h2>The baseline merger</h2>
+  <div class="fig-tall">
+    <img src="assets/baseline_merger/merger_N160k_eps01.gif"
+         alt="animation of a 1:1 parabolic galaxy merger">
+  </div>
+  <div class="caption">1:1 parabolic encounter, N = 160k. Tails, bridge, then
+    coalescence. (Reference run for every scan that follows.)</div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 7:15). LET IT PLAY — stop talking ~10 s and let them watch the
+    tails throw out and the cores sink. Name the phases as they happen: first
+    passage → tails → final coalescence. This is the visual everything else
+    deviates from.
+  </aside>
+</section>
+
+<section>
+  <h2>What's left behind (Q7)</h2>
+  <div class="cols">
+    <div class="col-narrow">
+      <p>Two disks → one <b>pressure-supported</b> remnant.</p>
+      <p>\(\Sigma(R)\) is straight in \(R^{1/4}\): a de Vaucouleurs profile —
+         the signature of an <b>elliptical</b>.</p>
+      <p>Bound, relaxed remnant satisfies the virial theorem:</p>
+      <p>\[ 2T + U = 0 \]</p>
+    </div>
+    <div>
+      <img src="assets/baseline_merger/merger_N160k_eps01_remnant.png"
+           alt="remnant surface-brightness profile in R^1/4">
+      <div class="caption">Remnant \(\Sigma(R)\) vs progenitor, \(R^{1/4}\) axis.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 8:30). The classic result: major mergers make ellipticals.
+    The R^1/4 straight line is the money plot — point at it.
+    <span class="todo">TODO: state the rough remnant effective radius if handy.</span>
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 5. FLAGSHIP — CARTWHEEL RING  (2 slides)         ~3:00  /11:30 -->
+<!-- ============================================================= -->
+<section data-background-color="#000000">
+  <h2>Flagship: a head-on hit makes a <span style="color:#ffd166;">ring</span></h2>
+  <div class="fig-tall">
+    <img src="assets/z_axis/multi_zaxis_headon.gif"
+         alt="head-on z-axis collision forming a Cartwheel-style ring">
+  </div>
+  <div class="caption">Head-on, face-on impact (pericentre = 0, z-axis).
+    Cartwheel-style ring — impossible in any in-plane geometry.</div>
+  <aside class="notes">
+    ⏱ 1:30 (cum 10:00). THE moment. Big pause, let the ring form and expand on
+    screen. "Nothing about the planar mergers could make this — it needs a
+    perpendicular, dead-centre hit." Don't over-explain yet; physics is next slide.
+  </aside>
+</section>
+
+<section>
+  <h2>Why a ring? — the impulse mechanism</h2>
+  <div class="cols">
+    <div class="col-narrow">
+      <ul style="font-size:0.82em;">
+        <li>Perpendicular pass → every disk star gets an inward radial kick
+            (Lynds &amp; Toomre 1976):</li>
+      </ul>
+      <p style="font-size:0.8em;">\[ \Delta v \sim \frac{2GM_\mathrm{p}}{b\,V} \]</p>
+      <ul style="font-size:0.82em;">
+        <li>Stars fall in, <b>overshoot</b>, rebound in phase → an outward
+            <b>density wave</b>.</li>
+        <li>Ring at \(t\!\approx\!33\), \(R\!\approx\!10\text{–}14\) kpc,
+            expanding \(\sim\!50\) km/s — matches the real Cartwheel.</li>
+      </ul>
+      <p style="font-size:0.62em;color:#9aa7b4;">Caveat: equal mass rings <i>both</i>
+        disks; the real Cartwheel is a small intruder through a big target.</p>
+    </div>
+    <div>
+      <img src="assets/z_axis/multi_zaxis_headon_ring_zoom.png"
+           alt="ring diagnostic: face-on snapshots and Sigma(R) bump">
+      <div class="caption">Face-on snapshots + \(\Sigma(R)\): a propagating bump.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:30 (cum 11:30). Now the mechanism: inward impulse → infall → rebound →
+    coherent outward wave. The Σ(R) bump that marches outward in radius is the
+    proof it's a wave, not a static feature. Drop the 50 km/s number — it lands.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 6. PARAMETER-SPACE AXES  (4 slides)              ~5:00  /16:30 -->
+<!-- ============================================================= -->
+<section>
+  <p class="kicker">Axis 1 — Pericentre</p>
+  <h2>How close must they pass to merge?</h2>
+  <div class="cols">
+    <div class="fig-wide">
+      <img src="assets/pericentre_scan/scan_pericentre_grid.gif"
+           alt="pericentre scan comparison animation">
+    </div>
+    <div class="col-narrow">
+      <ul style="font-size:0.78em;">
+        <li>Small \(r_p\): rapid merger, strongest tails.</li>
+        <li>Wide \(r_p\): clean <b>flyby</b>, never returns.</li>
+        <li>Threshold between \(r_p=10\) and \(20\) (≈ 35–70 kpc).</li>
+      </ul>
+      <p style="font-size:0.66em;color:#9aa7b4;">Dynamical friction sets it:
+        \( \dfrac{d\mathbf v}{dt}\propto -\dfrac{G^2 M\,\rho\,\ln\Lambda}{v^2}\) —
+        a faster, wider pass loses less energy.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 12:45). One sentence per outcome. The takeaway: there's a sharp
+    merge/flyby threshold, and Chandrasekhar friction is why.
+  </aside>
+</section>
+
+<section>
+  <p class="kicker">Axis 2 — Inclination</p>
+  <h2>Why aren't all mergers the Antennae?</h2>
+  <div class="cols">
+    <div class="fig-wide">
+      <img src="assets/inclination_scan/scan_inclination_grid.gif"
+           alt="inclination scan comparison animation">
+    </div>
+    <div class="col-narrow">
+      <ul style="font-size:0.8em;">
+        <li><b>Prograde</b> (coplanar): long, symmetric tidal tails.</li>
+        <li><b>Retrograde</b> (180°): almost no tails.</li>
+        <li>Spectacular tails need prograde geometry (Toomre 1972).</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 14:00). The Antennae/Mice are prograde survivors-bias. Most real
+    mergers are less dramatic because the disk spin isn't aligned with the orbit.
+  </aside>
+</section>
+
+<section>
+  <p class="kicker">Axis 3 — Mass ratio</p>
+  <h2>When does a merger become accretion?</h2>
+  <div class="cols">
+    <div class="fig-wide">
+      <img src="assets/mass_ratio_scan/multi_unequal_grid.gif"
+           alt="mass-ratio scan comparison animation">
+    </div>
+    <div class="col-narrow">
+      <ul style="font-size:0.8em;">
+        <li><b>1:1</b> — both disks destroyed → elliptical.</li>
+        <li><b>1:8</b> — primary survives intact; secondary is shredded and
+            absorbed.</li>
+        <li>"Merger" → "accretion" is a smooth continuum.</li>
+      </ul>
+      <p style="font-size:0.64em;color:#9aa7b4;">Minor mergers dominate the
+        cosmic rate — they grow bulges without killing disks.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 15:15). The same physics interpolates between two observationally
+    distinct regimes. Point at 1:1 (destruction) vs 1:8 (survival).
+  </aside>
+</section>
+
+<section>
+  <p class="kicker">Axis 4 — Number</p>
+  <h2>What if it's not just two?</h2>
+  <div class="cols">
+    <div class="fig-wide">
+      <img src="assets/three_galaxy/multi_three_default.gif"
+           alt="three-galaxy merger animation">
+    </div>
+    <div class="col-narrow">
+      <ul style="font-size:0.8em;">
+        <li>Three-body chaos — no closed orbit; which pair meets first is
+            sensitive to setup.</li>
+        <li>Outcome: a hotter, more disturbed remnant than any 1:1.</li>
+        <li>Real compact groups (Stephan's Quintet) do exactly this.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 1:15 (cum 16:30, target 16:30). The qualitative jump from clean 2-body to
+    chaotic 3-body. Keep it short — it's the "and there's more" beat before the close.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 7. SYNTHESIS                                     ~1:30  /18:00 -->
+<!-- ============================================================= -->
+<section>
+  <h2>One code, five knobs, five outcomes</h2>
+  <table class="axes">
+    <tr><th>Knob</th><th>Result</th></tr>
+    <tr><td>Pericentre</td><td>sharp merge / flyby threshold (friction-set)</td></tr>
+    <tr><td>Inclination</td><td>prograde → tails; retrograde → none</td></tr>
+    <tr><td>Mass ratio</td><td>merger → accretion continuum</td></tr>
+    <tr><td>Number</td><td>2-body order → 3-body chaos</td></tr>
+    <tr><td>Head-on axis</td><td><span style="color:#ffd166;">Cartwheel ring</span></td></tr>
+  </table>
+  <p style="margin-top:0.7em;font-size:0.8em;">
+    From a from-scratch softened-N² code + equilibrium ICs, validated against
+    Kepler and against the finite-N relaxation law.</p>
+  <p style="font-size:0.66em;color:#9aa7b4;">Limits: collisionless (no gas/SF),
+    finite N, direct-N² (no tree). Each is a clear next step.</p>
+  <aside class="notes">
+    ⏱ 1:00 (cum 17:30). The recap matrix — read it as "we mapped the parameter
+    space." End on the limitations so the Q&amp;A has somewhere friendly to go.
+  </aside>
+</section>
+
+<section data-background-color="#06080d">
+  <h2>Thank you</h2>
+  <p style="color:#9aa7b4;">Questions?</p>
+  <p style="font-size:0.6em;margin-top:1em;">Code &amp; figures:
+     <span style="color:#8fd3ff;">github.com/zoutongshen/CMPH_group_project_3</span></p>
+  <aside class="notes">
+    ⏱ 0:30 (cum 18:00). Leave the Cartwheel mental image hanging. Backup slides
+    are to the right ↓/→ if a question needs them.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- BACKUP  (uncounted — reachable but off the main flow)         -->
+<!-- ============================================================= -->
+<section>
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h2>Backup slides</h2>
+    <p style="color:#9aa7b4;">↓ for detail figures.</p>
+    <aside class="notes">Press ↓ to descend into backups; ← to return to the talk.</aside>
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Cartwheel — full ring diagnostic</h3>
+    <img src="assets/z_axis/multi_zaxis_headon_ring_diagnostic.png"
+         alt="full ring diagnostic t=18..45">
+    <div class="caption">Σ(R) snapshots, t = 18 → 45: the bump forms, peaks, expands.</div>
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Finite-N heating: N = 20k vs 80k</h3>
+    <div class="cols">
+      <div><img src="assets/disk_isolation/evolve_N20k_eps01_images.png" alt="N=20k disk images"><div class="caption">N = 20k</div></div>
+      <div><img src="assets/disk_isolation/evolve_N80k_eps01_images_thickening.png" alt="N=80k disk thickening"><div class="caption">N = 80k</div></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Pericentre — orbit geometry &amp; late-time flyby</h3>
+    <div class="cols">
+      <div><img src="assets/orbit_illustrations/orbit_peri20.png" alt="parabolic orbit r_p=20"><div class="caption">r_p = 20 orbit</div></div>
+      <div><img src="assets/pericentre_scan/scan_peri20_long_4panel.png" alt="r_p=20 long integration"><div class="caption">r_p = 20, escapes (t → 900)</div></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Inclination — per-run panels</h3>
+    <img src="assets/inclination_scan/scan_inclination_grid.png"
+         alt="inclination grid static comparison">
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Mass ratio — 1:8 late-time absorption</h3>
+    <img src="assets/mass_ratio_scan/multi_unequal_1to8_long_4panel.png"
+         alt="1:8 minor merger long integration">
+    <div class="caption">By t ≈ 800 the secondary is fully absorbed; primary disk intact.</div>
+  </section>
+</section>
+
+</div>
+</div>
+
+<!-- reveal.js core + plugins (vendored) -->
+<script src="reveal/revealjs/dist/reveal.js"></script>
+<script src="reveal/revealjs/plugin/notes/notes.js"></script>
+<script src="reveal/revealjs/plugin/highlight/highlight.js"></script>
+<script src="reveal/revealjs/plugin/math/math.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'fade',
+    controls: true,
+    progress: true,
+    // KaTeX loaded from the vendored copy (offline). Points at the package root
+    // that contains dist/katex.min.{js,css} and dist/contrib/auto-render.min.js.
+    katex: {
+      local: 'reveal/katex',
+      delimiters: [
+        { left: '$$',  right: '$$',  display: true  },
+        { left: '\\[', right: '\\]', display: true  },
+        { left: '$',   right: '$',   display: false },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    },
+    plugins: [ RevealMath.KaTeX, RevealHighlight, RevealNotes ]
+  });
+</script>
+</body>
+</html>
