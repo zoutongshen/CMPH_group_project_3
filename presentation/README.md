@@ -24,25 +24,29 @@ Then:
 
 | By end of… | clock |
 |---|---|
-| Roadmap | ~2:00 |
-| Validation | ~6:00 |
-| Q7 remnant | ~8:30 |
-| Cartwheel mechanism | ~11:30 |
-| Three-galaxy | ~16:30 |
-| Thank you | ~18:00 |
+| Workflow roadmap | ~2:00 |
+| Setup (gravity / positions / velocities) | ~4:45 |
+| Validation (N &amp; ε) | ~5:55 |
+| Baseline merger + remnant | ~8:10 |
+| Axes 1–4 (pericentre → number) | ~12:30 |
+| Cartwheel (collision axis, the finale) | ~15:05 |
+| Thank you | ~16:25 |
 
-Leaves ~2 min buffer/Q&A inside the 20.
+Leaves ~3.5 min buffer/Q&A inside the 20.
+
+**Structure:** Part 1 is setup-and-validation (build a galaxy → collide two →
+check it's physics not numerics); Part 2 is the five encounter axes, each a gif you
+narrate, building to the Cartwheel ring as the finale.
 
 ## What's still TODO (search the deck for `TODO` / `todo`)
 
 - Confirm the **group number** for project 3 (may differ from projects 1/2) — title slide.
 - Optional **observation image** (Antennae / Cartwheel) on the motivation slide, or delete it.
 - One spoken sentence per **equation** (the maths is rendered; you supply the interpretation).
-- Decide with Zhaoyang whether he **presents the Tier-1 slot** (Method III slide).
 - A couple of small `TODO`s for numbers you may want to quote (remnant \(R_e\), tree-vs-N²).
 
-The figures themselves are wired in and final — every `<img>` points at the existing
-`../figures/` tree (verified to resolve).
+The figures themselves are wired in and final — every `<img>` points at a copy under
+`assets/` (verified to resolve).
 
 ## Disaster fallback (carry this too)
 

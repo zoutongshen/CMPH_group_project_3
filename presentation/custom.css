@@ -56,3 +56,36 @@
 .reveal table.axes { font-size: 0.62em; margin: 0 auto; }
 .reveal table.axes td, .reveal table.axes th { padding: 0.18em 0.6em; }
 .reveal table.axes th { color: #8fd3ff; }
+
+/* ---- TEST: floating symbol-legend window (pinned to slide's right edge) ---- */
+.reveal .symbox {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 26%;
+  max-height: 78%;
+  overflow: auto;
+  background: rgba(18, 26, 38, 0.88);
+  border: 1px solid rgba(143, 211, 255, 0.35);
+  border-radius: 10px;
+  padding: 0.7em 0.9em;
+  text-align: left;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
+}
+.reveal .symbox h4 {
+  color: #8fd3ff;
+  font-size: 0.42em;
+  margin: 0 0 0.6em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.reveal .symbox p {
+  font-size: 0.42em;
+  line-height: 1.35;
+  margin: 0 0 0.45em;
+  color: #c7d2dd;
+}
+.reveal .symbox b { color: #ffd166; font-weight: 600; }
+/* When a symbox is present, keep slide body off the right third */
+.reveal .has-symbox { width: 68%; }
