@@ -206,7 +206,7 @@
 <section>
   <h2>Does it hold up?</h2>
   <div class="cols">
-    <div class="col-narrow">
+    <div>
       <ul style="font-size:0.82em;">
         <li><b>Kepler test:</b> 2-body orbit — energy &amp; \(L\) conserved to
             machine precision.</li>
@@ -222,9 +222,10 @@
       <p style="font-size:0.62em;color:#8fd3ff;">Converged choice: \(N=80\text{k}\),
          \(\varepsilon=0.1\) (0.35 kpc). Scale length \(h\) fixed &lt;1%.</p>
     </div>
-    <div>
+    <div class="col-narrow">
       <img src="assets/disk_isolation/evolve_N80k_eps01_profiles.png"
-           alt="rotation curve, enclosed mass and surface density by component">
+           alt="rotation curve, enclosed mass and surface density by component"
+           style="max-height:600px;">
       <div class="caption">\(v_c(r)\), \(M(<r)\), \(\Sigma(R)\) by component —
         radial structure stable \(t=0\!\to\!100\); flat rotation curve
         \(v_c\!\approx\!230\) km/s, <b>Milky-Way-like</b>.</div>
@@ -303,7 +304,7 @@
 <section>
   <h2>What's left behind — the remnant</h2>
   <div class="cols">
-    <div class="col-narrow">
+    <div>
       <p>Two rotating disks → one <b>pressure-supported</b> blob.</p>
       <p>\(\Sigma(R)\) is straight in \(R^{1/4}\): a de Vaucouleurs profile —
          the signature of an <b>elliptical</b>.</p>
@@ -318,9 +319,10 @@
         <p><b>\(\Sigma(R)\)</b> — surface density at radius \(R\)</p>
       </div>
     </div>
-    <div>
+    <div class="col-narrow">
       <img src="assets/baseline_merger/merger_N160k_eps01_remnant.png"
-           alt="remnant surface-brightness profile in R^1/4">
+           alt="remnant surface-brightness profile in R^1/4"
+           style="max-height:600px;">
       <div class="caption">Remnant \(\Sigma(R)\) vs progenitor, \(R^{1/4}\) axis.</div>
     </div>
   </div>
@@ -489,35 +491,23 @@
 <!-- 15. Cartwheel — mechanism                        ~1:15  /15:05 -->
 <section>
   <h2>Why a ring? — the impulse mechanism</h2>
-  <div class="cols">
-    <div class="col-narrow">
-      <ul style="font-size:0.82em;">
-        <li>Perpendicular pass → every disk star gets an inward radial kick
-            (Lynds &amp; Toomre 1976):</li>
-      </ul>
-      <p style="font-size:0.8em;">\[ \Delta v \sim \frac{2GM_\mathrm{p}}{b\,V} \]</p>
-      <ul style="font-size:0.82em;">
-        <li>Stars fall in, <b>overshoot</b>, rebound in phase → an outward
-            <b>density wave</b>.</li>
-        <li>Ring at \(t\!\approx\!33\), \(R\!\approx\!10\text{–}14\) kpc,
-            expanding \(\sim\!50\) km/s — matches the real Cartwheel.</li>
-      </ul>
-      <p style="font-size:0.62em;color:#9aa7b4;">Caveat: equal mass rings <i>both</i>
-        disks; the real Cartwheel is a small intruder through a big target.</p>
-      <div class="symbox-inline">
-        <p><b>\(M_p\)</b> — intruder mass &middot; <b>\(b\)</b> — impact parameter &middot; <b>\(V\)</b> — passage speed</p>
-      </div>
-    </div>
-    <div>
-      <img src="assets/z_axis/multi_zaxis_headon_ring_zoom.png"
-           alt="ring diagnostic: face-on snapshots and Sigma(R) bump">
-      <div class="caption">Face-on snapshots + \(\Sigma(R)\): a propagating bump.</div>
-    </div>
-  </div>
+  <img src="assets/z_axis/multi_zaxis_headon_ring_zoom.png"
+       alt="ring diagnostic: face-on snapshots and Sigma(R) bump"
+       style="max-height:380px;">
+  <div class="caption">Face-on snapshots + \(\Sigma(R)\): the density bump forms,
+    peaks at \(t\!\approx\!33\), and marches outward.</div>
+  <p style="font-size:0.74em; max-width:90%; margin:0.7em auto 0;">
+    Perpendicular impact → every disk star gets an inward kick
+    \(\Delta v\!\sim\!2GM_\mathrm{p}/bV\); stars infall, <b>overshoot</b>, and
+    rebound in phase → a coherent <b>outward density wave</b>. Ring at
+    \(R\!\approx\!10\text{–}14\) kpc, expanding \(\sim\!50\) km/s — like the real Cartwheel.</p>
   <aside class="notes">
-    ⏱ 1:15 (cum 16:45). The mechanism: inward impulse → infall → overshoot →
-    rebound → coherent outward wave. The Σ(R) bump marching outward in radius is
-    the proof it's a wave, not a static feature. Drop the 50 km/s number — it lands.
+    ⏱ 1:15 (cum 16:45). Mechanism: inward impulse → infall → overshoot → rebound →
+    coherent outward wave. The Σ(R) bump marching outward in radius is the proof it's
+    a wave, not a static feature — drop the 50 km/s number, it lands. Symbols:
+    \(M_p\) = intruder mass, \(b\) = impact parameter, \(V\) = passage speed
+    (Lynds &amp; Toomre 1976). Caveat if asked: equal mass rings BOTH disks; the real
+    Cartwheel is a small intruder through a big target.
   </aside>
 </section>
 

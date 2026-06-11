@@ -210,7 +210,8 @@ def merger_remnant_figure(
     progenitor_label = "progenitor disk, 1 galaxy (t=0)"
     remnant_label = f"remnant, 2 galaxies (t={times[-1]:.0f})"
     plt.style.use("dark_background")
-    figure, axes = plt.subplots(1, 3, figsize=(17, 5.0))
+    plt.rcParams.update({"font.size": 13})
+    figure, axes = plt.subplots(3, 1, figsize=(9.0, 13.0))
 
     axes[0].semilogy(bin_centres_kpc, sigma_initial * sigma_factor,
                      "C0-", label=progenitor_label)

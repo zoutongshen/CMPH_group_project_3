@@ -252,7 +252,8 @@ def plot_comparison(
     }
 
     plt.style.use("dark_background")
-    figure, axes = plt.subplots(1, 3, figsize=(17, 5.0))
+    plt.rcParams.update({"font.size": 13})
+    figure, axes = plt.subplots(3, 1, figsize=(9.0, 13.0))
 
     # Panel 1: rotation-curve decomposition, t = 0 (solid) vs final (dashed).
     for name, colour in component_colour.items():
