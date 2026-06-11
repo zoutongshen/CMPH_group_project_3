@@ -3,6 +3,7 @@ Multi-trajectory animated comparison grid (master gif).
 
 Renders an animation with one face-on panel per trajectory, all
 synchronised to the same master simulation time. The master time runs
+import os
 from 0 to the shortest trajectory's tstop, so every panel shows
 meaningful (in-range) data at every frame; each panel's actual frame
 index is chosen as the nearest snapshot to the master time.
@@ -74,7 +75,7 @@ def load_trajectory_for_animation(
     stars = robust_stellar_mask(galaxy_id, num_disk, num_bulge, num_halo)
     star_galaxy = galaxy_id[stars]
 
-    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
+    unique_galaxies = [int(gid) for gid in np.unique(star_galaxy)]
     show_per_galaxy = {}
     for gid in unique_galaxies:
         indices_this = np.flatnonzero(star_galaxy == gid)
@@ -140,7 +141,7 @@ def build_master_animation(
             axis.set_ylim(-view_kpc, view_kpc)
             axis.set_aspect("equal")
             axis.set_facecolor("#0a0a0a")
-            axis.tick_params(colors="#888888", labelsize=7)
+            axis.tick_params(colors="#888888", labelsize=11)
             for spine in axis.spines.values():
                 spine.set_color("#444444")
             per_column[vertical_axis] = {}
@@ -150,13 +151,13 @@ def build_master_animation(
                     c=GALAXY_COLOURS[gid % len(GALAXY_COLOURS)],
                     alpha=0.5, linewidths=0.0,
                 )
-        axes[0, col].set_title(traj["label"], color="#ffffff", fontsize=10)
-        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=8)
+        axes[0, col].set_title(traj["label"], color="#ffffff", fontsize=16)
+        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=13)
         scatters_by_column.append(per_column)
 
-    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=9)
-    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=9)
-    title = figure.suptitle("", color="#ffffff", fontsize=11)
+    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=14)
+    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=14)
+    title = figure.suptitle("", color="#ffffff", fontsize=18)
 
     def update(frame_index: int):
         master_t = master_times[frame_index]
@@ -187,6 +188,7 @@ def build_master_animation(
             output_path = output_path.rsplit(".", 1)[0] + ".gif"
         writer = animation.PillowWriter(fps=frames_per_second)
 
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     movie.save(output_path, writer=writer, dpi=90)
     plt.close(figure)
     print(f"Saved {output_path}")

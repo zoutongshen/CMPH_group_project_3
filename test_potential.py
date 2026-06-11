@@ -42,9 +42,9 @@ def check_bulge_alone_against_analytic() -> None:
     params = GalaxyParams(disk_mass=1.0e-12, halo_mass=1.0e-12)
     potential = GalaxyPotential(params)
 
-    a = params.bulge_scale
+    bulge_scale = params.bulge_scale
     test_radii = np.geomspace(1.0e-2, 10.0, 50)
-    analytic = params.bulge_mass * test_radii ** 2 / (test_radii + a) ** 2
+    analytic = params.bulge_mass * test_radii ** 2 / (test_radii + bulge_scale) ** 2
     tabulated = potential.enclosed_mass(test_radii)
 
     relative_error = np.max(np.abs(tabulated - analytic) / (analytic + 1e-30))
@@ -66,9 +66,9 @@ def check_bulge_potential_derivative_against_analytic() -> None:
     params = GalaxyParams(disk_mass=1.0e-12, halo_mass=1.0e-12)
     potential = GalaxyPotential(params)
 
-    a = params.bulge_scale
+    bulge_scale = params.bulge_scale
     test_radii = np.geomspace(0.01, 10.0, 50)
-    analytic = params.bulge_mass / (test_radii + a) ** 2
+    analytic = params.bulge_mass / (test_radii + bulge_scale) ** 2
     tabulated = potential.potential_derivative(test_radii)
 
     relative_error = np.max(np.abs(tabulated - analytic) / analytic)

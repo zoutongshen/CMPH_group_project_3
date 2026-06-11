@@ -21,6 +21,7 @@ quick sanity-check runs):
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 import time
 from typing import Tuple
@@ -272,6 +273,7 @@ def main() -> None:
     passed = report(results, params)
 
     if args.save_snapshots:
+        os.makedirs(os.path.dirname(args.save_snapshots) or ".", exist_ok=True)
         np.savez(
             args.save_snapshots,
             snapshot_times=results["snapshot_times"],

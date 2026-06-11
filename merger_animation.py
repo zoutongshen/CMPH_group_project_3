@@ -21,6 +21,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 import shutil
 
@@ -85,7 +86,7 @@ def merger_movie(
 
     rng = np.random.default_rng(0)
     galaxy_colours = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
-    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
+    unique_galaxies = [int(gid) for gid in np.unique(star_galaxy)]
     show_per_galaxy = {
         gid: np.flatnonzero(star_galaxy == gid)[
             decimated_indices(
@@ -151,6 +152,7 @@ def merger_movie(
             output_path = output_path.rsplit(".", 1)[0] + ".gif"
         writer = animation.PillowWriter(fps=frames_per_second)
 
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     movie.save(output_path, writer=writer, dpi=90)
     plt.close(figure)
     print(f"Saved {output_path}")

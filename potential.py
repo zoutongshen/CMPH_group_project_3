@@ -81,34 +81,38 @@ class GalaxyPotential:
         cylindrical_R = radii_column * sin_polar[None, :]
         height_z = radii_column * cos_polar[None, :]
 
-        h = self.params.disk_scale_length
-        z0 = self.params.disk_scale_height
+        disk_scale_length = self.params.disk_scale_length
+        disk_scale_height = self.params.disk_scale_height
         disk_prefactor = self.params.disk_mass / (
-            4.0 * np.pi * h * h * z0
+            4.0 * np.pi * disk_scale_length * disk_scale_length * disk_scale_height
         )
         # sech^2(z/z0) -> 0 exponentially for |z| >> z0; clipping the cosh
         # argument at |x| = 350 avoids overflow of cosh(x)^2 while leaving the
         # density unchanged to many orders of magnitude.
-        clipped_height_argument = np.clip(height_z / z0, -350.0, 350.0)
+        clipped_height_argument = np.clip(height_z / disk_scale_height, -350.0, 350.0)
         disk_density_2d = (
             disk_prefactor
-            * np.exp(-cylindrical_R / h)
+            * np.exp(-cylindrical_R / disk_scale_length)
             / np.cosh(clipped_height_argument) ** 2
         )
         self._rho_disk = 0.5 * np.trapezoid(
             disk_density_2d * sin_polar[None, :], polar_angles, axis=1
         )
 
-        a = self.params.bulge_scale
+        bulge_scale = self.params.bulge_scale
         self._rho_bulge = (
-            self.params.bulge_mass * a
-            / (2.0 * np.pi * self._radii * (self._radii + a) ** 3)
+            self.params.bulge_mass * bulge_scale
+            / (2.0 * np.pi * self._radii * (self._radii + bulge_scale) ** 3)
         )
 
         r_c = self.params.halo_cutoff
         gamma = self.params.halo_core
-        q = gamma / r_c
-        alpha = 1.0 / (1.0 - np.sqrt(np.pi) * q * np.exp(q * q) * (1.0 - erf(q)))
+        core_ratio = gamma / r_c
+        alpha = 1.0 / (
+            1.0
+            - np.sqrt(np.pi) * core_ratio * np.exp(core_ratio * core_ratio)
+            * (1.0 - erf(core_ratio))
+        )
         self._rho_halo = (
             self.params.halo_mass
             * alpha
@@ -161,28 +165,28 @@ class GalaxyPotential:
 
             setattr(self, f"_sigma_r_squared_{component_name}", sigma_r_squared)
 
-    def bulge_velocity_dispersion_squared(self, r: ArrayOrScalar) -> ArrayOrScalar:
+    def bulge_velocity_dispersion_squared(self, radius: ArrayOrScalar) -> ArrayOrScalar:
         """
         Isotropic radial velocity dispersion squared sigma_r^2(r) for the bulge,
         from spherical Jeans (eq 2.63) in the total potential. By isotropy,
         each Cartesian component shares this variance.
         """
-        return np.interp(r, self._radii, self._sigma_r_squared_bulge)
+        return np.interp(radius, self._radii, self._sigma_r_squared_bulge)
 
-    def halo_velocity_dispersion_squared(self, r: ArrayOrScalar) -> ArrayOrScalar:
+    def halo_velocity_dispersion_squared(self, radius: ArrayOrScalar) -> ArrayOrScalar:
         """
         Isotropic radial velocity dispersion squared sigma_r^2(r) for the halo,
         from spherical Jeans (eq 2.63) in the total potential.
         """
-        return np.interp(r, self._radii, self._sigma_r_squared_halo)
+        return np.interp(radius, self._radii, self._sigma_r_squared_halo)
 
-    def enclosed_mass(self, r: ArrayOrScalar) -> ArrayOrScalar:
+    def enclosed_mass(self, radius: ArrayOrScalar) -> ArrayOrScalar:
         """Total mass enclosed within spherical radius r."""
-        return np.interp(r, self._radii, self._mass_enclosed)
+        return np.interp(radius, self._radii, self._mass_enclosed)
 
-    def total_density(self, r: ArrayOrScalar) -> ArrayOrScalar:
+    def total_density(self, radius: ArrayOrScalar) -> ArrayOrScalar:
         """Spherical-shell-averaged total density at radius r."""
-        return np.interp(r, self._radii, self._rho_total)
+        return np.interp(radius, self._radii, self._rho_total)
 
     def circular_speed_squared(self, cylindrical_radius: ArrayOrScalar) -> ArrayOrScalar:
         """
@@ -204,14 +208,14 @@ class GalaxyPotential:
             cylindrical_radius, self._radii, self._epicyclic_squared
         )
 
-    def potential_derivative(self, r: ArrayOrScalar) -> ArrayOrScalar:
+    def potential_derivative(self, radius: ArrayOrScalar) -> ArrayOrScalar:
         """
         Radial derivative of the gravitational potential:
         dPhi/dr = G M(<r) / r^2 (spherical Newton's theorem).
         Used for the bulge/halo Jeans equation (eq 2.63).
         """
-        mass = self.enclosed_mass(r)
-        return mass / (np.asarray(r) ** 2)
+        mass = self.enclosed_mass(radius)
+        return mass / (np.asarray(radius) ** 2)
 
     def disk_surface_density(
         self, cylindrical_radius: ArrayOrScalar
@@ -223,9 +227,13 @@ class GalaxyPotential:
         vertical Jeans relation (eq 2.40) and the Toomre stability criterion
         (eq 2.47).
         """
-        h = self.params.disk_scale_length
-        normalisation = self.params.disk_mass / (2.0 * np.pi * h * h)
-        return normalisation * np.exp(-np.asarray(cylindrical_radius) / h)
+        disk_scale_length = self.params.disk_scale_length
+        normalisation = self.params.disk_mass / (
+            2.0 * np.pi * disk_scale_length * disk_scale_length
+        )
+        return normalisation * np.exp(
+            -np.asarray(cylindrical_radius) / disk_scale_length
+        )
 
 
 def main() -> None:

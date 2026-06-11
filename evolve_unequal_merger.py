@@ -14,6 +14,7 @@ Run as a script:
 CMPH Project 3 -- extension/multi-galaxy.
 """
 
+import os
 import argparse
 import time
 
@@ -150,6 +151,7 @@ def main() -> None:
         inclination_degrees=args.inclination,
         num_dumps=args.num_dumps,
     )
+    os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     np.savez_compressed(args.out, **result)
     print(f"Saved trajectory to {args.out}")
 

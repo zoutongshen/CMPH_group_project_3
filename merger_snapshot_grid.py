@@ -16,6 +16,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 from typing import Sequence
 
@@ -83,7 +84,7 @@ def render_grid(
 
     rng = np.random.default_rng(0)
     galaxy_colours = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
-    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
+    unique_galaxies = [int(gid) for gid in np.unique(star_galaxy)]
 
     def decimate(indices: np.ndarray) -> np.ndarray:
         if indices.size <= max_points_per_galaxy:
@@ -125,20 +126,21 @@ def render_grid(
             axis.set_ylim(-view_kpc, view_kpc)
             axis.set_aspect("equal")
             axis.set_facecolor("#0a0a0a")
-            axis.tick_params(colors="#cccccc", labelsize=8)
+            axis.tick_params(colors="#cccccc", labelsize=13)
             for spine in axis.spines.values():
                 spine.set_color("#444444")
 
         axes[0, col].set_title(
             f"{label}\nt = {actual_t:.1f}  ({gigayears:.2f} Gyr)",
-            color="#ffffff", fontsize=11,
+            color="#ffffff", fontsize=18,
         )
-        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=9)
+        axes[1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=14)
 
-    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=10)
-    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=10)
+    axes[0, 0].set_ylabel("Face-on\ny  [kpc]", color="#cccccc", fontsize=16)
+    axes[1, 0].set_ylabel("Edge-on\nz  [kpc]", color="#cccccc", fontsize=16)
 
     plt.tight_layout()
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     figure.savefig(output_path, dpi=130, facecolor=figure.get_facecolor())
     plt.close(figure)
     print(f"Saved {output_path}")

@@ -23,6 +23,7 @@ masses, snapshot_times, the disk/bulge/halo split and the run metadata.
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 import time
 
@@ -133,6 +134,7 @@ def main() -> None:
         seed=args.seed,
         num_dumps=args.num_dumps,
     )
+    os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     np.savez_compressed(args.out, **result)
     print(f"Saved trajectory to {args.out}")
 

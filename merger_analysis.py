@@ -18,6 +18,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 from typing import Tuple
 
@@ -208,6 +209,7 @@ def merger_remnant_figure(
 
     progenitor_label = "progenitor disk, 1 galaxy (t=0)"
     remnant_label = f"remnant, 2 galaxies (t={times[-1]:.0f})"
+    plt.style.use("dark_background")
     figure, axes = plt.subplots(1, 3, figsize=(17, 5.0))
 
     axes[0].semilogy(bin_centres_kpc, sigma_initial * sigma_factor,
@@ -217,7 +219,7 @@ def merger_remnant_figure(
     axes[0].set_xlabel("R  [kpc]")
     axes[0].set_ylabel(r"$\Sigma$  [$M_\odot\,\mathrm{pc}^{-2}$]")
     axes[0].set_title("Stellar surface density vs R")
-    axes[0].legend(fontsize=8)
+    axes[0].legend(fontsize=13)
     axes[0].set_xlim(0, 25)
 
     axes[1].semilogy(bin_centres_kpc ** 0.25, sigma_initial * sigma_factor,
@@ -225,11 +227,11 @@ def merger_remnant_figure(
     axes[1].semilogy(bin_centres_kpc ** 0.25, sigma_final * sigma_factor,
                      "C3o", markersize=3, label="remnant")
     axes[1].semilogy(bin_centres_kpc ** 0.25, 10.0 ** model,
-                     "k--", label=f"R^1/4 fit (slope {slope:.2f})")
+                     "w--", label=f"R^1/4 fit (slope {slope:.2f})")
     axes[1].set_xlabel(r"$R^{1/4}$  [kpc$^{1/4}$]")
     axes[1].set_ylabel(r"$\Sigma$  [$M_\odot\,\mathrm{pc}^{-2}$]")
     axes[1].set_title("de Vaucouleurs test (straight = elliptical)")
-    axes[1].legend(fontsize=8)
+    axes[1].legend(fontsize=13)
 
     axes[2].semilogy(radius_kpc, mass_initial * units.mass_msun,
                      "C0-", label=progenitor_label)
@@ -238,7 +240,7 @@ def merger_remnant_figure(
     axes[2].set_xlabel("r  [kpc]")
     axes[2].set_ylabel(r"$M_\star(<r)$  [$M_\odot$]")
     axes[2].set_title("Stellar cumulative mass")
-    axes[2].legend(fontsize=8)
+    axes[2].legend(fontsize=13)
     axes[2].set_xlim(0, 30)
 
     figure.suptitle(
@@ -246,6 +248,7 @@ def merger_remnant_figure(
         f"eps = {float(trajectory['softening']):g}  (MW physical scaling)"
     )
     figure.tight_layout()
+    os.makedirs(os.path.dirname(output_png) or ".", exist_ok=True)
     figure.savefig(output_png, dpi=130)
     plt.close(figure)
 

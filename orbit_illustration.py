@@ -45,38 +45,38 @@ def integrate_kepler(
     )
 
     # Two equal-mass bodies, COM at origin, motion in x-y plane.
-    pos = np.array([
+    positions = np.array([
         [+0.5 * separation, 0.0],
         [-0.5 * separation, 0.0],
     ])
     rel_velocity = np.array([radial_velocity, tangential_velocity])
-    vel = np.array([+0.5 * rel_velocity, -0.5 * rel_velocity])
+    velocities = np.array([+0.5 * rel_velocity, -0.5 * rel_velocity])
 
     num_steps = int(round(duration / timestep))
     history = np.zeros((num_steps + 1, 2, 2))
-    history[0] = pos
+    history[0] = positions
 
     mass_half = 0.5 * total_mass  # each body holds half the total mass
     softening_sq = softening ** 2
     for step in range(num_steps):
         # Pairwise softened gravity (only one pair).
-        delta = pos[1] - pos[0]
+        delta = positions[1] - positions[0]
         distance_sq = float(delta @ delta) + softening_sq
         distance_cubed = distance_sq ** 1.5
         accel_on_0 = +mass_half * delta / distance_cubed
         accel_on_1 = -mass_half * delta / distance_cubed
         # Velocity-Verlet.
-        vel[0] += 0.5 * timestep * accel_on_0
-        vel[1] += 0.5 * timestep * accel_on_1
-        pos += timestep * vel
-        delta = pos[1] - pos[0]
+        velocities[0] += 0.5 * timestep * accel_on_0
+        velocities[1] += 0.5 * timestep * accel_on_1
+        positions += timestep * velocities
+        delta = positions[1] - positions[0]
         distance_sq = float(delta @ delta) + softening_sq
         distance_cubed = distance_sq ** 1.5
         accel_on_0 = +mass_half * delta / distance_cubed
         accel_on_1 = -mass_half * delta / distance_cubed
-        vel[0] += 0.5 * timestep * accel_on_0
-        vel[1] += 0.5 * timestep * accel_on_1
-        history[step + 1] = pos
+        velocities[0] += 0.5 * timestep * accel_on_0
+        velocities[1] += 0.5 * timestep * accel_on_1
+        history[step + 1] = positions
     return history
 
 
@@ -120,11 +120,11 @@ def make_one_illustration(
     axis.scatter([pos_1[0, 0]], [pos_1[0, 1]], color="#5fa8ff",
                  s=80, zorder=5)
     axis.text(pos_1[0, 0] + 1.5, pos_1[0, 1] + 1.5,
-              "start (1)\n(+15, 0)", color="#5fa8ff", fontsize=9)
+              "start (1)\n(+15, 0)", color="#5fa8ff", fontsize=14)
     axis.scatter([pos_2[0, 0]], [pos_2[0, 1]], color="#ff7a5f",
                  s=80, zorder=5)
     axis.text(pos_2[0, 0] - 8.0, pos_2[0, 1] - 3.5,
-              "start (2)\n(-15, 0)", color="#ff7a5f", fontsize=9)
+              "start (2)\n(-15, 0)", color="#ff7a5f", fontsize=14)
 
     # Pericentre points.
     axis.scatter([pos_1[pericentre_index, 0]],
@@ -145,11 +145,11 @@ def make_one_illustration(
     midy = 0.5 * (pos_1[pericentre_index, 1] + pos_2[pericentre_index, 1])
     axis.text(midx + 0.4, midy + 0.4,
               f"pericentre gap\nr_p = {actual_pericentre:.1f}",
-              color="#ffd76f", fontsize=9)
+              color="#ffd76f", fontsize=14)
 
     # COM marker.
     axis.scatter([0], [0], marker="+", color="#ffffff", s=180, lw=2.0)
-    axis.text(0.6, -1.0, "COM", color="#ffffff", fontsize=9)
+    axis.text(0.6, -1.0, "COM", color="#ffffff", fontsize=14)
 
     # Axes / labels.
     axis.set_xlim(-view_kpc, view_kpc)
@@ -162,7 +162,7 @@ def make_one_illustration(
         spine.set_color("#444444")
     axis.grid(True, color="#222222", lw=0.4)
     legend = axis.legend(loc="upper left", facecolor="#101010",
-                         edgecolor="#444444", fontsize=9)
+                         edgecolor="#444444", fontsize=14)
     for text in legend.get_texts():
         text.set_color("#cccccc")
     extra = ""
@@ -172,7 +172,7 @@ def make_one_illustration(
         f"Parabolic two-body encounter: separation = {separation:.0f}, "
         f"pericentre = {pericentre:.0f}{extra}\n"
         "(point-mass limit; merger pipeline starts from this orbit)",
-        color="#ffffff", fontsize=11,
+        color="#ffffff", fontsize=18,
     )
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

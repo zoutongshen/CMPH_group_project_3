@@ -18,6 +18,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 import time
 
@@ -158,6 +159,7 @@ def main() -> None:
         num_dumps=args.num_dumps,
         collision_axis=args.collision_axis,
     )
+    os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     np.savez_compressed(args.out, **result)
     print(f"Saved trajectory to {args.out}")
 

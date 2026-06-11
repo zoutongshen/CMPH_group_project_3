@@ -22,6 +22,7 @@ convention from the manual (§3.0.3).
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
@@ -280,6 +281,7 @@ def main() -> None:
     print(f"  position bounding box (max |x_i|) = {np.abs(positions).max():.4f}")
 
     output_path = "data/galaxy_positions.npz"
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     np.savez(output_path, positions=positions, masses=masses)
     print(f"\nSaved to {output_path}")
 

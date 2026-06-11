@@ -22,6 +22,7 @@ prescription is similarly clamped.
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 from typing import Optional, Tuple
 
 import numpy as np
@@ -35,7 +36,7 @@ _CRITICAL_RADIUS_FACTOR = 2.4
 
 
 def disk_velocities(
-    disk_position_array: np.ndarray,
+    disk_positions: np.ndarray,
     potential: GalaxyPotential,
     rng: np.random.Generator,
     toomre_q: float = _TOOMRE_Q,
@@ -45,7 +46,7 @@ def disk_velocities(
     Sample disk velocities at the given disk-particle positions.
 
     Args:
-        disk_position_array:     shape (N_disk, 3).
+        disk_positions:     shape (N_disk, 3).
         potential:               GalaxyPotential built with matching params.
         rng:                     numpy random generator.
         toomre_q:                Toomre Q at the critical radius (default 1.5).
@@ -55,15 +56,15 @@ def disk_velocities(
         Array of shape (N_disk, 3) -- velocities in Cartesian coordinates.
     """
     params = potential.params
-    h = params.disk_scale_length
+    disk_scale_length = params.disk_scale_length
     z_0 = params.disk_scale_height
-    critical_radius = critical_radius_factor * h
+    critical_radius = critical_radius_factor * disk_scale_length
 
     cylindrical_R = np.sqrt(
-        disk_position_array[:, 0] ** 2 + disk_position_array[:, 1] ** 2
+        disk_positions[:, 0] ** 2 + disk_positions[:, 1] ** 2
     )
     azimuthal_angle = np.arctan2(
-        disk_position_array[:, 1], disk_position_array[:, 0]
+        disk_positions[:, 1], disk_positions[:, 0]
     )
 
     surface_density_at_particle = potential.disk_surface_density(cylindrical_R)
@@ -89,7 +90,7 @@ def disk_velocities(
 
     sigma_phi_squared = sigma_R_squared * epicyclic_ratio
 
-    asymmetric_drift_bracket = 1.0 - epicyclic_ratio - 2.0 * cylindrical_R / h
+    asymmetric_drift_bracket = 1.0 - epicyclic_ratio - 2.0 * cylindrical_R / disk_scale_length
     mean_v_phi_squared = v_circular_squared + sigma_R_squared * asymmetric_drift_bracket
     mean_v_phi_squared = np.maximum(mean_v_phi_squared, 0.0)
     mean_v_phi = np.sqrt(mean_v_phi_squared)
@@ -102,7 +103,7 @@ def disk_velocities(
     velocity_vertical = rng.normal(0.0, sigma_z)
     velocity_azimuthal = rng.normal(mean_v_phi, sigma_phi)
 
-    velocities = np.empty_like(disk_position_array)
+    velocities = np.empty_like(disk_positions)
     cos_phi = np.cos(azimuthal_angle)
     sin_phi = np.sin(azimuthal_angle)
     velocities[:, 0] = velocity_radial * cos_phi - velocity_azimuthal * sin_phi
@@ -127,7 +128,7 @@ def _isotropic_velocities(
 
 
 def bulge_velocities(
-    bulge_position_array: np.ndarray,
+    bulge_positions: np.ndarray,
     potential: GalaxyPotential,
     rng: np.random.Generator,
 ) -> np.ndarray:
@@ -135,20 +136,20 @@ def bulge_velocities(
     Sample bulge velocities via isotropic Jeans (eq 2.63 in the total potential).
 
     Args:
-        bulge_position_array: shape (N_bulge, 3).
+        bulge_positions: shape (N_bulge, 3).
         potential:            GalaxyPotential with matching params.
         rng:                  numpy random generator.
 
     Returns:
         Array of shape (N_bulge, 3) -- isotropic Cartesian velocities.
     """
-    radii = np.linalg.norm(bulge_position_array, axis=1)
+    radii = np.linalg.norm(bulge_positions, axis=1)
     dispersion_squared = potential.bulge_velocity_dispersion_squared(radii)
-    return _isotropic_velocities(bulge_position_array, dispersion_squared, rng)
+    return _isotropic_velocities(bulge_positions, dispersion_squared, rng)
 
 
 def halo_velocities(
-    halo_position_array: np.ndarray,
+    halo_positions: np.ndarray,
     potential: GalaxyPotential,
     rng: np.random.Generator,
 ) -> np.ndarray:
@@ -156,16 +157,16 @@ def halo_velocities(
     Sample halo velocities via isotropic Jeans (eq 2.63 in the total potential).
 
     Args:
-        halo_position_array: shape (N_halo, 3).
+        halo_positions: shape (N_halo, 3).
         potential:           GalaxyPotential with matching params.
         rng:                 numpy random generator.
 
     Returns:
         Array of shape (N_halo, 3) -- isotropic Cartesian velocities.
     """
-    radii = np.linalg.norm(halo_position_array, axis=1)
+    radii = np.linalg.norm(halo_positions, axis=1)
     dispersion_squared = potential.halo_velocity_dispersion_squared(radii)
-    return _isotropic_velocities(halo_position_array, dispersion_squared, rng)
+    return _isotropic_velocities(halo_positions, dispersion_squared, rng)
 
 
 def galaxy_velocities(
@@ -236,6 +237,7 @@ def main() -> None:
           f"{np.sqrt((velocities[params.num_disk + params.num_bulge:] ** 2).mean()):.4f}")
 
     output_path = "data/spiral.npz"
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     np.savez(output_path, positions=positions, velocities=velocities, masses=masses)
     print(f"\nSaved to {output_path}")
 

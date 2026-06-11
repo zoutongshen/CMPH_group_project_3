@@ -82,18 +82,25 @@
 <!-- ============================================================= -->
 <section>
   <h2>Setup I — gravity &amp; integration</h2>
-  <p>Direct <b>N²</b> gravity, Plummer-softened, Numba-JIT'd:</p>
-  <p>\[ \mathbf a_i = -G\!\!\sum_{j\neq i}\! m_j\,
-        \frac{\mathbf r_i-\mathbf r_j}
-             {\left(|\mathbf r_i-\mathbf r_j|^2+\varepsilon^2\right)^{3/2}} \]</p>
-  <p>Stepped with velocity-Verlet (leapfrog), kick–drift–kick:</p>
-  <p style="font-size:0.85em;">
-    \[ \mathbf v_{1/2}=\mathbf v_0+\tfrac{\Delta t}{2}\mathbf a_0,\quad
-       \mathbf x_1=\mathbf x_0+\Delta t\,\mathbf v_{1/2},\quad
-       \mathbf v_1=\mathbf v_{1/2}+\tfrac{\Delta t}{2}\mathbf a_1 \]</p>
-  <p class="caption" style="margin-top:1.2em;">
-    \(\varepsilon\): a small <b>softening length</b> added to every separation, so two
-    stars passing close don't feel a singular \(1/r^2\) kick.</p>
+  <div class="has-symbox">
+    <p>Direct <b>N²</b> gravity, Plummer-softened, Numba-JIT'd:</p>
+    <p style="font-size:0.82em;">\[ \mathbf a_i = -G\!\!\sum_{j\neq i}\! m_j\,
+          \frac{\mathbf r_i-\mathbf r_j}
+               {\left(|\mathbf r_i-\mathbf r_j|^2+\varepsilon^2\right)^{3/2}} \]</p>
+    <p>Stepped with velocity-Verlet (leapfrog), kick–drift–kick:</p>
+    <p style="font-size:0.68em;">
+      \[ \mathbf v_{1/2}=\mathbf v_0+\tfrac{\Delta t}{2}\mathbf a_0,\quad
+         \mathbf x_1=\mathbf x_0+\Delta t\,\mathbf v_{1/2},\quad
+         \mathbf v_1=\mathbf v_{1/2}+\tfrac{\Delta t}{2}\mathbf a_1 \]</p>
+  </div>
+  <div class="symbox">
+    <p><b>\(\mathbf a_i\)</b> — acceleration of particle \(i\)</p>
+    <p><b>\(m_j,\ \mathbf r_j\)</b> — mass &amp; position of particle \(j\)</p>
+    <p><b>\(G\)</b> — gravitational constant</p>
+    <p><b>\(\varepsilon\)</b> — softening length (no singular kicks)</p>
+    <p><b>\(\Delta t\)</b> — timestep</p>
+    <p><b>\(\mathbf v_{1/2}\)</b> — half-step velocity (leapfrog)</p>
+  </div>
   <aside class="notes">
     ⏱ 1:00 (cum 2:55). Two ideas only: (1) softened direct sum — ε is why a close
     2-body kick can't blow up; (2) symplectic leapfrog so energy doesn't drift.
@@ -145,7 +152,7 @@
   <div class="fig-tall">
     <img src="assets/disk_isolation/evolve_N80k_eps01_images.png"
          alt="face-on and edge-on images of disk/bulge/halo components"
-         style="max-height:76vh;">
+         style="max-height:580px;">
   </div>
   <div class="caption">The initial equilibrium galaxy, face-on &amp; edge-on
     (disk + bulge + halo, N = 80k).</div>
@@ -161,26 +168,29 @@
 <!-- ============================================================= -->
 <section>
   <h2>Setup III — building the galaxy: <i>the motion</i></h2>
-  <div class="cols">
-    <div>
-      <p>Velocities are set so the galaxy is <b>already in equilibrium</b> — it
-         must not fly apart or collapse when released.</p>
-      <ul style="font-size:0.8em;">
-        <li><b>Disk:</b> rotation-supported, \( v_c^2(R)=R\,\dfrac{d\Phi}{dR}\),
-            with radial spread fixed by the Toomre criterion</li>
-      </ul>
-      <p style="font-size:0.8em;">\[ Q=\frac{\sigma_R\,\kappa}{3.36\,G\,\Sigma}\;\gtrsim\;1 \]</p>
-      <ul style="font-size:0.8em;">
-        <li><b>Bulge &amp; halo:</b> pressure-supported — isotropic dispersions
-            from the spherical Jeans equation:</li>
-      </ul>
-      <p style="font-size:0.8em;">\[ \frac{d\!\left(\rho\,\sigma_r^2\right)}{dr}=-\rho\,\frac{d\Phi}{dr} \]</p>
-    </div>
-    <div class="col-narrow">
-      <p style="font-size:0.68em;color:#9aa7b4;">Same total potential \(\Phi\),
-        three different velocity prescriptions. Get this wrong and the "galaxy"
-        relaxes violently in the first few steps.</p>
-    </div>
+  <div class="has-symbox">
+    <p>Velocities are set so the galaxy is <b>already in equilibrium</b> — it
+       must not fly apart or collapse when released.</p>
+    <ul style="font-size:0.8em;">
+      <li><b>Disk:</b> rotation-supported, \( v_c^2(R)=R\,\dfrac{d\Phi}{dR}\),
+          with radial spread fixed by the Toomre criterion</li>
+    </ul>
+    <p style="font-size:0.8em;">\[ Q=\frac{\sigma_R\,\kappa}{3.36\,G\,\Sigma}\;\gtrsim\;1 \]</p>
+    <ul style="font-size:0.8em;">
+      <li><b>Bulge &amp; halo:</b> pressure-supported — isotropic dispersions
+          from the spherical Jeans equation:</li>
+    </ul>
+    <p style="font-size:0.8em;">\[ \frac{d\!\left(\rho\,\sigma_r^2\right)}{dr}=-\rho\,\frac{d\Phi}{dr} \]</p>
+    <p class="caption" style="margin-top:0.5em;">Same potential \(\Phi\), three
+      prescriptions — get it wrong and the galaxy relaxes violently in a few steps.</p>
+  </div>
+  <div class="symbox">
+    <p><b>\(v_c\)</b> — circular speed</p>
+    <p><b>\(\Phi\)</b> — gravitational potential</p>
+    <p><b>\(Q\)</b> — Toomre stability parameter</p>
+    <p><b>\(\sigma_R\,/\,\sigma_r\)</b> — radial dispersion (disk / sphere)</p>
+    <p><b>\(\kappa\)</b> — epicyclic frequency</p>
+    <p><b>\(\Sigma\,/\,\rho\)</b> — surface / volume density</p>
   </div>
   <aside class="notes">
     ⏱ 0:55 (cum 5:10). The subtle half of the IC: each component needs velocities
@@ -214,16 +224,57 @@
     </div>
     <div>
       <img src="assets/disk_isolation/evolve_N80k_eps01_profiles.png"
-           alt="radial profiles of the isolated disk over time">
-      <div class="caption">Structure holds over the run (N = 80k).</div>
+           alt="rotation curve, enclosed mass and surface density by component">
+      <div class="caption">\(v_c(r)\), \(M(<r)\), \(\Sigma(R)\) by component —
+        radial structure stable \(t=0\!\to\!100\); flat rotation curve
+        \(v_c\!\approx\!230\) km/s, <b>Milky-Way-like</b>.</div>
     </div>
   </div>
   <aside class="notes">
     ⏱ 1:10 (cum 6:20). The "we turned a bug into a result" slide — brief but
     important. The disk puffs up; we proved it's finite-N relaxation, controlled
     by N and ε, NOT a broken IC. Quadrupling N cuts heating by the predicted
-    factor. This buys trust for every result after. Don't dwell — converged
-    numbers, move on.
+    factor. Also point at the rotation curve — flat, peaking ~230 km/s: it
+    reproduces the Milky Way, an independent literature check, not just stability.
+    This buys trust for every result after. Don't dwell — converged numbers, move on.
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 9. GALAXY-MODEL COMPARISON (mass model + v_c curve) ~0:45 /7:05 -->
+<!-- ============================================================= -->
+<section>
+  <h2>Comparing the two galaxy models</h2>
+  <div class="cols">
+    <div class="col-narrow">
+      <table class="axes" style="font-size:0.66em;">
+        <tr><th>mass</th><th>ours</th><th>tree code</th></tr>
+        <tr><td>\(M_d\)</td><td>1</td><td>1</td></tr>
+        <tr><td>\(M_b\)</td><td>1/3</td><td>0.25</td></tr>
+        <tr><td>\(M_h\)</td><td>5.8</td><td>3.0</td></tr>
+        <tr><td>halo frac.</td><td>81%</td><td>71%</td></tr>
+      </table>
+      <p class="caption" style="margin-top:0.6em;">Same profile <i>shapes</i>;
+        a lighter halo → the velocity curve shifts down.</p>
+    </div>
+    <div>
+      <img src="assets/comparison/rotation_curve_compare.png"
+           alt="rotation curve comparison: manual M_h=5.8 vs octree M_h=3.0">
+      <div class="caption">Resulting circular-velocity curves.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 0:45 (cum 7:05). Compare the galaxy setup, not the method. Both build the same
+    three-component galaxy with the same density-profile SHAPES; the second is an
+    independent Barnes–Hut tree implementation — mention the method only if a
+    professor asks. The one input that differs: the tree model uses a lighter halo
+    (M_h = 3.0 vs the manual's 5.8) — same shape, ~half the mass — plus cold-collapse
+    ICs. Result: our curve is flat &amp; Milky-Way-like (~230 km/s); the lighter halo
+    shifts the whole curve down a near-uniform ~40 km/s, just below the MW line
+    (it's a √M scaling of the dominant halo term, so it reads as a parallel offset).
+    Caveat if pressed: this figure proves the MASS-MODEL difference only — it is NOT
+    a tree-vs-direct-N² test, so don't claim the two methods are validated against
+    each other. (Partner's slot — hand off here if he presents it.)
   </aside>
 </section>
 
@@ -239,7 +290,7 @@
   <div class="caption">Two equal galaxies, parabolic encounter (N = 160k).
     First passage → tails &amp; bridge → coalescence. <b>The reference for every axis.</b></div>
   <aside class="notes">
-    ⏱ 1:15 (cum 7:35). Set it up in one line — two equal galaxies dropped on a
+    ⏱ 1:15 (cum 8:20). Set it up in one line — two equal galaxies dropped on a
     parabolic orbit — then LET IT PLAY. Stop talking ~10 s; name the phases as they
     happen: first passage → tails throw out → cores sink → merge. Everything in the
     second half deviates from THIS.
@@ -258,6 +309,10 @@
          the signature of an <b>elliptical</b>.</p>
       <p>Bound &amp; relaxed → virial theorem holds:</p>
       <p>\[ 2T + U = 0 \]</p>
+      <div class="symbox-inline">
+        <p><b>\(T,\ U\)</b> — total kinetic / potential energy</p>
+        <p><b>\(\Sigma(R)\)</b> — surface density at radius \(R\)</p>
+      </div>
     </div>
     <div>
       <img src="assets/baseline_merger/merger_N160k_eps01_remnant.png"
@@ -266,7 +321,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:00 (cum 8:35). The classic result: a major merger of two disks makes an
+    ⏱ 1:00 (cum 9:20). The classic result: a major merger of two disks makes an
     elliptical. The R^1/4 straight line is the money plot — point at it. That
     closes the "build &amp; collide" half; now we turn the knobs.
     <span class="todo">TODO: quote the rough remnant effective radius if handy.</span>
@@ -278,6 +333,31 @@
 <!-- ============================================================= -->
 
 <!-- 10. Axis 1 — Pericentre                           ~1:10  /9:20 -->
+<!-- 10. Part 2 divider — explore beyond the baseline   ~0:30  /9:05 -->
+<section>
+  <h2>Beyond the baseline merger</h2>
+  <p style="font-size:0.85em;">Every result that follows starts from <b>one</b>
+     baseline encounter — we hold it fixed and change a single knob at a time.</p>
+  <table class="axes" style="font-size:0.6em;">
+    <tr><th colspan="2">Baseline encounter — default parameters</th></tr>
+    <tr><td>particles \(N\)</td><td>40,000 &nbsp;(20k per galaxy: 6k disk + 2k bulge + 12k halo)</td></tr>
+    <tr><td>softening \(\varepsilon\)</td><td>0.1 = 0.35 kpc</td></tr>
+    <tr><td>timestep \(\Delta t\)</td><td>0.125 = 1.6 Myr</td></tr>
+    <tr><td>duration</td><td>300 = 3.9 Gyr</td></tr>
+    <tr><td>pericentre \(r_p\)</td><td>5 = 17.5 kpc</td></tr>
+    <tr><td>inclination</td><td>30°</td></tr>
+    <tr><td>mass ratio</td><td>1 : 1</td></tr>
+    <tr><td>collision axis</td><td>in-plane (orbit ∥ disks)</td></tr>
+  </table>
+  <aside class="notes">
+    ⏱ 0:30 (cum 9:50). Transition into Part 2. "We've built a galaxy and merged
+    two. Now we fix everything at this baseline and turn exactly one knob per axis."
+    Each upcoming slide changes one row of this table. (Scans run at N=40k for speed;
+    the showcase gif earlier was the N=160k high-res version.)
+  </aside>
+</section>
+
+<!-- 11. Axis 1 — Pericentre                            ~1:10  /10:15 -->
 <section>
   <p class="kicker">Axis 1 — Pericentre</p>
   <h2>How close must they pass to merge?</h2>
@@ -295,10 +375,14 @@
       <p style="font-size:0.66em;color:#9aa7b4;">Dynamical friction sets it:
         \( \dfrac{d\mathbf v}{dt}\propto -\dfrac{G^2 M\,\rho\,\ln\Lambda}{v^2}\) —
         a faster, wider pass loses less energy.</p>
+      <div class="symbox-inline">
+        <p><b>\(M\)</b> — galaxy mass &middot; <b>\(\rho\)</b> — background density</p>
+        <p><b>\(\ln\Lambda\)</b> — Coulomb logarithm &middot; <b>\(v\)</b> — relative speed</p>
+      </div>
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:10 (cum 9:45). First axis — talk over the gif. One sentence per outcome.
+    ⏱ 1:10 (cum 11:00). First axis — talk over the gif. One sentence per outcome.
     Takeaway: a sharp merge/flyby threshold, and Chandrasekhar friction is why.
   </aside>
 </section>
@@ -321,7 +405,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:05 (cum 10:50). Talk over the gif. The spectacular real systems are a
+    ⏱ 1:05 (cum 12:05). Talk over the gif. The spectacular real systems are a
     prograde survivor-bias — most mergers are less dramatic because the disk spin
     isn't aligned with the orbit.
   </aside>
@@ -347,7 +431,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:05 (cum 11:55). Talk over the gif. Same physics interpolates between two
+    ⏱ 1:05 (cum 13:10). Talk over the gif. Same physics interpolates between two
     observationally distinct regimes — point at 1:1 (destruction) vs 1:8 (survival).
   </aside>
 </section>
@@ -371,7 +455,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:00 (cum 12:55). Talk over the gif. The qualitative jump from clean 2-body
+    ⏱ 1:00 (cum 14:10). Talk over the gif. The qualitative jump from clean 2-body
     to chaotic 3-body. Keep it tight — it's the build-up before the finale.
   </aside>
 </section>
@@ -387,7 +471,7 @@
   <div class="caption">Orbit perpendicular to the disks, dead-centre impact.
     A Cartwheel-style ring — impossible in any in-plane geometry.</div>
   <aside class="notes">
-    ⏱ 1:20 (cum 14:15). THE finale. The first four axes stayed in the disk plane;
+    ⏱ 1:20 (cum 15:30). THE finale. The first four axes stayed in the disk plane;
     this one tips the orbit perpendicular and hits dead-centre. Big pause — let the
     ring form and expand on screen. "Nothing in the planar mergers could make this."
     Mechanism on the next slide.
@@ -412,6 +496,9 @@
       </ul>
       <p style="font-size:0.62em;color:#9aa7b4;">Caveat: equal mass rings <i>both</i>
         disks; the real Cartwheel is a small intruder through a big target.</p>
+      <div class="symbox-inline">
+        <p><b>\(M_p\)</b> — intruder mass &middot; <b>\(b\)</b> — impact parameter &middot; <b>\(V\)</b> — passage speed</p>
+      </div>
     </div>
     <div>
       <img src="assets/z_axis/multi_zaxis_headon_ring_zoom.png"
@@ -420,17 +507,17 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:15 (cum 15:30). The mechanism: inward impulse → infall → overshoot →
+    ⏱ 1:15 (cum 16:45). The mechanism: inward impulse → infall → overshoot →
     rebound → coherent outward wave. The Σ(R) bump marching outward in radius is
     the proof it's a wave, not a static feature. Drop the 50 km/s number — it lands.
   </aside>
 </section>
 
 <!-- ============================================================= -->
-<!-- 16. SYNTHESIS                                    ~1:00  /16:05 -->
+<!-- 17. SYNTHESIS                                    ~1:00  /17:00 -->
 <!-- ============================================================= -->
 <section>
-  <h2>One code, five knobs, five outcomes</h2>
+  <h2>Summary</h2>
   <table class="axes">
     <tr><th>Axis</th><th>Result</th></tr>
     <tr><td>Pericentre</td><td>sharp merge / flyby threshold (friction-set)</td></tr>
@@ -439,14 +526,28 @@
     <tr><td>Number</td><td>2-body order → 3-body chaos</td></tr>
     <tr><td>Collision axis</td><td><span style="color:#ffd166;">head-on → Cartwheel ring</span></td></tr>
   </table>
-  <p style="margin-top:0.7em;font-size:0.8em;">
-    All from one self-gravitating N-body code + equilibrium ICs, validated against
-    Kepler and the finite-N relaxation law.</p>
-  <p style="font-size:0.66em;color:#9aa7b4;">Limits: collisionless (no gas/SF),
+  <p style="margin-top:0.9em;font-size:0.66em;color:#9aa7b4;">Limits: collisionless (no gas/SF),
     finite N, direct-N² (no tree). Each is a clear next step.</p>
   <aside class="notes">
-    ⏱ 1:00 (cum 16:30). The recap matrix — "we mapped the encounter parameter
+    ⏱ 1:00 (cum 17:45). The recap matrix — "we mapped the encounter parameter
     space from one code." End on the limitations so Q&amp;A has a friendly opening.
+  </aside>
+</section>
+
+<!-- 18. KEY REFERENCES                                ~0:15  /17:15 -->
+<section>
+  <h2>Key references</h2>
+  <ul style="font-size:0.58em; line-height:1.55; text-align:left; max-width:92%; margin:0.4em auto 0;">
+    <li>Hernquist (1993), <i>ApJS</i> 86, 389 — equilibrium N-body galaxy ICs (disk + bulge + halo).</li>
+    <li>Toomre &amp; Toomre (1972), <i>ApJ</i> 178, 623 — tidal bridges &amp; tails; prograde vs retrograde.</li>
+    <li>Lynds &amp; Toomre (1976), <i>ApJ</i> 209, 382 — ring galaxies / the Cartwheel mechanism.</li>
+    <li>Chandrasekhar (1943), <i>ApJ</i> 97, 255 — dynamical friction.</li>
+    <li>de Vaucouleurs (1948), <i>Ann. d'Astrophys.</i> 11, 247 — the \(R^{1/4}\) profile.</li>
+    <li>Naab, <i>N-body Simulations and Galaxy Formation</i> — practicum manual (model units &amp; exercises).</li>
+  </ul>
+  <aside class="notes">
+    ⏱ 0:15 (cum 18:00). Flash it — say Toomre and Hernquist out loud, their
+    results recur through the talk. Leave it up into the closing if you like.
   </aside>
 </section>
 
@@ -456,7 +557,7 @@
   <p style="font-size:0.6em;margin-top:1em;">Code &amp; figures:
      <span style="color:#8fd3ff;">github.com/zoutongshen/CMPH_group_project_3</span></p>
   <aside class="notes">
-    ⏱ 0:30 (cum 17:00). Leave the Cartwheel mental image hanging. Backup slides
+    ⏱ 0:30 (cum 18:30). Leave the Cartwheel mental image hanging. Backup slides
     are to the right ↓/→ if a question needs them.
   </aside>
 </section>
@@ -529,6 +630,10 @@
     transition: 'fade',
     controls: true,
     progress: true,
+    // 16:9 widescreen canvas — matches modern projectors, more room for the
+    // wide scan gifs and the formula + symbol-card two-column slides.
+    width: 1280,
+    height: 720,
     // KaTeX loaded from the vendored copy (offline). Points at the package root
     // that contains dist/katex.min.{js,css} and dist/contrib/auto-render.min.js.
     katex: {

@@ -26,6 +26,7 @@ standard disc-galaxy merger orbit setup.
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 from typing import Optional, Tuple
 
@@ -226,6 +227,7 @@ def main() -> None:
           f"inclination = {args.inclination} deg")
     print(f"  |net momentum| / total mass = "
           f"{net_momentum / masses.sum():.3e}")
+    os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     np.savez_compressed(
         args.out, positions=positions, velocities=velocities,
         masses=masses, galaxy_id=galaxy_id,

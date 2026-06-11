@@ -19,6 +19,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 from typing import Dict, Tuple
 
@@ -247,9 +248,10 @@ def plot_comparison(
         * units.length_kpc
     )
     component_colour = {
-        "total": "k", "disk": "C0", "bulge": "C3", "halo": "C2",
+        "total": "w", "disk": "C0", "bulge": "C3", "halo": "C2",
     }
 
+    plt.style.use("dark_background")
     figure, axes = plt.subplots(1, 3, figsize=(17, 5.0))
 
     # Panel 1: rotation-curve decomposition, t = 0 (solid) vs final (dashed).
@@ -267,7 +269,7 @@ def plot_comparison(
     axes[0].set_xlabel("r  [kpc]")
     axes[0].set_ylabel(r"$v_c$  [km/s]")
     axes[0].set_title("Circular velocity (by component)")
-    axes[0].legend(fontsize=7, ncol=2)
+    axes[0].legend(fontsize=11, ncol=2)
     axes[0].set_xlim(0, 30)
     axes[0].set_ylim(0, None)
 
@@ -284,7 +286,7 @@ def plot_comparison(
     axes[1].set_xlabel("r  [kpc]")
     axes[1].set_ylabel(r"$M(<r)$  [$M_\odot$]")
     axes[1].set_title("Cumulative mass (by component)")
-    axes[1].legend(fontsize=7, ncol=2)
+    axes[1].legend(fontsize=11, ncol=2)
     axes[1].set_xlim(0, 30)
     axes[1].set_ylim(1e7, 1e12)
 
@@ -300,7 +302,7 @@ def plot_comparison(
     axes[2].set_xlabel("R  [kpc]")
     axes[2].set_ylabel(r"$\Sigma$  [$M_\odot\,\mathrm{pc}^{-2}$]")
     axes[2].set_title("Projected surface density")
-    axes[2].legend(fontsize=8)
+    axes[2].legend(fontsize=13)
     axes[2].set_xlim(0, 20)
     axes[2].set_ylim(1e-1, 1e4)
 
@@ -310,6 +312,7 @@ def plot_comparison(
         f"(physical units, MW scaling)"
     )
     figure.tight_layout()
+    os.makedirs(os.path.dirname(output_png) or ".", exist_ok=True)
     figure.savefig(output_png, dpi=130)
     plt.close(figure)
 

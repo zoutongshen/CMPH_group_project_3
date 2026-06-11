@@ -14,6 +14,7 @@ Run as a script:
 CMPH Project 3 -- Zoutong Shen / Zhaoyang Chu, 2026.
 """
 
+import os
 import argparse
 from typing import Dict
 
@@ -103,7 +104,7 @@ def make_snapshot_figure(
 
         time_label = f"t = {times[snapshot_index]:.0f}"
         axes[row, 0].set_ylabel(
-            f"{time_label}\n\ny  [kpc]", fontsize=11
+            f"{time_label}\n\ny  [kpc]", fontsize=18
         )
         for column in range(4):
             axes[row, column].set_facecolor("#f4f4f4")
@@ -119,14 +120,15 @@ def make_snapshot_figure(
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
     figure.legend(
-        handles, labels, loc="outside upper center", ncol=3,
-        markerscale=8, frameon=False, fontsize=12,
+        handles, labels, loc="outside lower center", ncol=3,
+        markerscale=8, frameon=False, fontsize=19,
     )
     figure.suptitle(
         f"Isolated disk -- N = {len(masses)}, "
         f"eps = {float(trajectory['softening']):g}  (MW physical scaling)",
-        fontsize=14,
+        fontsize=22,
     )
+    os.makedirs(os.path.dirname(output_png) or ".", exist_ok=True)
     figure.savefig(output_png, dpi=120)
     plt.close(figure)
 
@@ -200,19 +202,20 @@ def disk_thickening_figure(
     axis_edge.set_xlabel("x  [kpc]")
     axis_edge.set_ylabel("z  [kpc]")
     axis_edge.set_title("Disk edge-on (tight zoom)")
-    axis_edge.legend(loc="upper right", fontsize=9, markerscale=8)
+    axis_edge.legend(loc="upper right", fontsize=14, markerscale=8)
 
     axis_profile.set_xlabel("|z|  [kpc]")
     axis_profile.set_ylabel("normalised disk count")
     axis_profile.set_title("Vertical density profile")
     axis_profile.set_ylim(1.0e-3, 1.5)
-    axis_profile.legend(fontsize=9)
+    axis_profile.legend(fontsize=14)
 
     figure.suptitle(
         f"Disk vertical thickening -- N = {len(masses)}, "
         f"eps = {float(trajectory['softening']):g}  (MW physical scaling)",
-        fontsize=13,
+        fontsize=21,
     )
+    os.makedirs(os.path.dirname(output_png) or ".", exist_ok=True)
     figure.savefig(output_png, dpi=120)
     plt.close(figure)
     return scale_heights

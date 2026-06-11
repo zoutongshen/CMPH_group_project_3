@@ -12,6 +12,7 @@ Run as a script:
 CMPH Project 3 -- extension/orbit-scans.
 """
 
+import os
 import argparse
 from typing import Sequence
 
@@ -79,7 +80,7 @@ def draw_panel(
     stars = robust_stellar_mask(galaxy_id, num_disk, num_bulge, num_halo)
     star_galaxy = galaxy_id[stars]
     galaxy_colours = ["#5fa8ff", "#ff7a5f", "#6fdc8c", "#d18cff", "#ffd76f"]
-    unique_galaxies = [int(g) for g in np.unique(star_galaxy)]
+    unique_galaxies = [int(gid) for gid in np.unique(star_galaxy)]
 
     def decimate(indices: np.ndarray) -> np.ndarray:
         if indices.size <= max_points_per_galaxy:
@@ -110,7 +111,7 @@ def draw_panel(
     axis.set_ylim(-view_kpc, view_kpc)
     axis.set_aspect("equal")
     axis.set_facecolor("#0a0a0a")
-    axis.tick_params(colors="#888888", labelsize=7)
+    axis.tick_params(colors="#888888", labelsize=11)
     for spine in axis.spines.values():
         spine.set_color("#444444")
     return actual_t
@@ -146,11 +147,11 @@ def render_grid(
                 axes[row, col].text(
                     0.5, 0.5, f"missing\n{path}",
                     transform=axes[row, col].transAxes,
-                    color="#aa6666", fontsize=9, ha="center", va="center",
+                    color="#aa6666", fontsize=14, ha="center", va="center",
                 )
                 axes[row, col].set_xticks([])
                 axes[row, col].set_yticks([])
-            axes[row, 0].set_ylabel(label, color="#ffffff", fontsize=11)
+            axes[row, 0].set_ylabel(label, color="#ffffff", fontsize=18)
             continue
         for col, t in enumerate(times_code):
             actual_t = draw_panel(
@@ -161,19 +162,20 @@ def render_grid(
                 gigayears = actual_t * units.time_year / 1.0e9
                 axes[row, col].set_title(
                     f"t = {actual_t:.0f}  ({gigayears:.2f} Gyr)",
-                    color="#ffffff", fontsize=10,
+                    color="#ffffff", fontsize=16,
                 )
-        axes[row, 0].set_ylabel(label, color="#ffffff", fontsize=11)
+        axes[row, 0].set_ylabel(label, color="#ffffff", fontsize=18)
 
     for col in range(num_cols):
-        axes[-1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=9)
+        axes[-1, col].set_xlabel("x  [kpc]", color="#cccccc", fontsize=14)
     for row in range(num_rows):
         axes[row, 0].set_ylabel(
             axes[row, 0].get_ylabel() + "\ny  [kpc]",
-            color="#cccccc", fontsize=10,
+            color="#cccccc", fontsize=16,
         )
 
     plt.tight_layout()
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
     print(f"Saved {output_path}")

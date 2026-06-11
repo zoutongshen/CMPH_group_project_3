@@ -15,6 +15,7 @@ Run as a script:
 CMPH Project 3 -- extension/multi-galaxy (z-axis variant).
 """
 
+import os
 import argparse
 
 import matplotlib
@@ -51,6 +52,7 @@ def radial_surface_density(
 
 
 def nearest_snapshot(snapshot_times: np.ndarray, target_t: float) -> int:
+    """Index of the snapshot whose time is closest to ``target_t``."""
     return int(np.argmin(np.abs(snapshot_times - target_t)))
 
 
@@ -134,13 +136,13 @@ def build_figure(
         axis_scatter.set_ylim(-view_kpc, view_kpc)
         axis_scatter.set_aspect("equal")
         axis_scatter.set_facecolor("#0a0a0a")
-        axis_scatter.tick_params(colors="#888888", labelsize=7)
+        axis_scatter.tick_params(colors="#888888", labelsize=11)
         for spine in axis_scatter.spines.values():
             spine.set_color("#444444")
         gigayears = actual_t * units.time_year / 1.0e9
         axis_scatter.set_title(
             f"t = {actual_t:.1f}  ({gigayears:.2f} Gyr)",
-            color="#ffffff", fontsize=10,
+            color="#ffffff", fontsize=16,
         )
 
         # Bottom row -- radial Sigma(R) of galaxy 1's disk.
@@ -165,12 +167,12 @@ def build_figure(
         axis_profile.set_ylim(1.0e5, 1.0e9)
         axis_profile.set_facecolor("#0a0a0a")
         axis_profile.grid(True, which="both", color="#222222", lw=0.4)
-        axis_profile.tick_params(colors="#888888", labelsize=7)
+        axis_profile.tick_params(colors="#888888", labelsize=11)
         for spine in axis_profile.spines.values():
             spine.set_color("#444444")
         if col == 0:
             legend = axis_profile.legend(
-                fontsize=7, loc="upper right", frameon=False,
+                fontsize=11, loc="upper right", frameon=False,
             )
             for text in legend.get_texts():
                 text.set_color("#cccccc")
@@ -202,24 +204,25 @@ def build_figure(
                 )
                 axis_profile.text(
                     peak_radius, 3.0e8, label,
-                    color=colour, fontsize=7, va="center",
+                    color=colour, fontsize=11, va="center",
                 )
 
     axes[0, 0].set_ylabel(
-        "Galaxy 1 disk (xy)\ny  [kpc]", color="#cccccc", fontsize=9,
+        "Galaxy 1 disk (xy)\ny  [kpc]", color="#cccccc", fontsize=14,
     )
     axes[1, 0].set_ylabel(
-        r"$\Sigma(R)$  [M$_\odot$ / kpc$^2$]", color="#cccccc", fontsize=9,
+        r"$\Sigma(R)$  [M$_\odot$ / kpc$^2$]", color="#cccccc", fontsize=14,
     )
     for col in range(num_panels):
-        axes[1, col].set_xlabel("R  [kpc]", color="#cccccc", fontsize=8)
+        axes[1, col].set_xlabel("R  [kpc]", color="#cccccc", fontsize=13)
     figure.suptitle(
         "Ring diagnostic -- head-on z-axis collision (galaxy 1 disk shown,"
         " galaxy 2 disk faded)",
-        color="#ffffff", fontsize=11,
+        color="#ffffff", fontsize=18,
     )
 
     plt.tight_layout(rect=(0.0, 0.0, 1.0, 0.96))
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
     print(f"Saved {output_path}")
