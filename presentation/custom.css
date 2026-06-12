@@ -4,6 +4,16 @@
   --r-main-font-size: 30px;          /* a touch bigger than default for the back row */
 }
 
+/* Breathing room: keep content off the canvas edges. 44px each side of the
+   1280px canvas (~3.5%) — applied at the slide level so every layout inherits
+   it. Inner sections of vertical stacks skip it (the wrapper already pads). */
+.reveal .slides section {
+  box-sizing: border-box;
+  padding-left: 44px;
+  padding-right: 44px;
+}
+.reveal .slides section section { padding-left: 0; padding-right: 0; }
+
 .reveal h1 { font-size: 1.7em; }
 .reveal h2 { font-size: 1.25em; text-transform: none; letter-spacing: -0.01em; }
 .reveal h3 { font-size: 1.0em;  text-transform: none; color: #8fd3ff; }
@@ -32,7 +42,7 @@
 .reveal .fig-wide img  { max-height: 380px; width: auto; }
 
 /* Two-column layout helper */
-.reveal .cols { display: flex; gap: 1.5em; align-items: center; justify-content: center; }
+.reveal .cols { display: flex; gap: 1.9em; align-items: center; justify-content: center; }
 .reveal .cols > div { flex: 1; min-width: 0; }
 .reveal .col-narrow { flex: 0 0 36% !important; }
 
@@ -64,7 +74,7 @@
 .reveal .symbox {
   position: absolute;
   top: 50%;
-  right: 12px;
+  right: 44px;   /* aligned with the global slide gutter */
   transform: translateY(-50%);
   width: 26%;
   max-height: 82%;
