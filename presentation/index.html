@@ -260,25 +260,18 @@
 <!-- ============================================================= -->
 <section>
   <h2>Same gravity, two algorithms</h2>
-  <div class="cols">
-    <div class="col-narrow">
-      <ul style="font-size:0.72em;">
-        <li><b>Direct \(N^2\)</b> — sum every pair, exact;
-            cost \(\mathcal O(N^2)\).</li>
-        <li><b>Barnes–Hut octree</b> — a distant cell acts as one
-            centre-of-mass point when (cell size)/(distance) \(<\theta\);
-            cost \(\mathcal O(N\log N)\).</li>
-        <li>At \(\theta=0.5\): median force error <b>0.4%</b>,
-            \(7\times\) faster at \(N=80\)k.</li>
-      </ul>
-    </div>
-    <div>
-      <img src="assets/comparison/method_evolve_compare.png"
-           alt="disk profile and rotation curve at t=100, direct N2 vs tree">
-      <div class="caption">Identical galaxy, leapfrog &amp; \(\varepsilon\) —
-        only the force algorithm differs. Structure at \(t=100\) overlaps.</div>
-    </div>
-  </div>
+  <ul style="font-size:0.7em; width:90%; margin:0.2em auto 0.5em; text-align:left;">
+    <li><b>Direct \(N^2\)</b> — sum every pair, exact; cost \(\mathcal O(N^2)\).</li>
+    <li><b>Barnes–Hut octree</b> — a distant cell acts as one centre-of-mass
+        point when (cell size)/(distance) \(<\theta\); cost \(\mathcal O(N\log N)\).</li>
+    <li>At \(\theta=0.5\): median force error <b>0.4%</b>,
+        \(7\times\) faster at \(N=80\)k.</li>
+  </ul>
+  <img src="assets/comparison/method_evolve_compare.png"
+       alt="disk profile and rotation curve at t=100, direct N2 vs tree"
+       style="max-height:330px;">
+  <div class="caption">Identical galaxy, leapfrog &amp; \(\varepsilon\) —
+    only the force algorithm differs. Structure at \(t=100\) overlaps.</div>
   <aside class="notes">
     ⏱ 0:45 (cum 7:05).
     • two implementations of the SAME force law: exact pairwise vs hierarchical
