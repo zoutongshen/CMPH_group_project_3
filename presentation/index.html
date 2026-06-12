@@ -256,7 +256,42 @@
 </section>
 
 <!-- ============================================================= -->
-<!-- 9. GALAXY-MODEL COMPARISON (mass model + v_c curve) ~0:45 /7:05 -->
+<!-- 8b. ALGORITHMS — direct N² vs Barnes–Hut octree    ~0:45 /7:05 -->
+<!-- ============================================================= -->
+<section>
+  <h2>Same gravity, two algorithms</h2>
+  <div class="cols">
+    <div class="col-narrow">
+      <ul style="font-size:0.72em;">
+        <li><b>Direct \(N^2\)</b> — sum every pair, exact;
+            cost \(\mathcal O(N^2)\).</li>
+        <li><b>Barnes–Hut octree</b> — a distant cell acts as one
+            centre-of-mass point when (cell size)/(distance) \(<\theta\);
+            cost \(\mathcal O(N\log N)\).</li>
+        <li>At \(\theta=0.5\): median force error <b>0.4%</b>,
+            \(7\times\) faster at \(N=80\)k.</li>
+      </ul>
+    </div>
+    <div>
+      <img src="assets/comparison/method_evolve_compare.png"
+           alt="disk profile and rotation curve at t=100, direct N2 vs tree">
+      <div class="caption">Identical galaxy, leapfrog &amp; \(\varepsilon\) —
+        only the force algorithm differs. Structure at \(t=100\) overlaps.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    ⏱ 0:45 (cum 7:05).
+    • two implementations of the SAME force law: exact pairwise vs hierarchical
+      centre-of-mass approximation (opening angle θ = 0.5)
+    • cross-check: same ICs, same leapfrog, Δt, ε — evolved to t=100, profiles overlap
+    • the trade: 0.4% median force error buys O(N log N) — 1.01 s → 0.15 s per
+      evaluation at N=80k (error histogram &amp; timing figure in backups)
+    [Zhaoyang: fill in — full draft in speaker_notes_part1.md]
+  </aside>
+</section>
+
+<!-- ============================================================= -->
+<!-- 9. GALAXY-MODEL COMPARISON (mass model + v_c curve) ~0:45 /7:50 -->
 <!-- ============================================================= -->
 <section>
   <h2>Comparing the two galaxy models</h2>
@@ -279,7 +314,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 0:45 (cum 7:05).
+    ⏱ 0:45 (cum 7:50).
     • compare the galaxy SETUP, not the method (tree vs N² only if asked)
     • one input differs: lighter halo (M_h 3.0 vs 5.8) → curve shifts down ~30–40 km/s,
       near-uniform (√M of the dominant halo term)
@@ -300,7 +335,7 @@
   <div class="caption">Two equal galaxies, parabolic encounter (N = 160k).
     First passage → tails &amp; bridge → coalescence. <b>The reference for every axis.</b></div>
   <aside class="notes">
-    ⏱ 1:15 (cum 8:20).
+    ⏱ 1:15 (cum 9:05).
     • one-line setup, then LET IT PLAY (~10 s silence)
     • name the phases: first passage → tails → cores sink → merge
     • "everything in the second half deviates from THIS"
@@ -337,7 +372,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:00 (cum 9:20).
+    ⏱ 1:00 (cum 10:05).
     • the classic result: two disks → one elliptical; R^1/4 straight line = the proof
     • R_e ≈ 4.8 kpc from the fit — right size for a 10^11 M_sun elliptical;
       half-mass 5.6 kpc agrees (cross-check, not R_e)
@@ -368,7 +403,7 @@
     <tr><td>collision axis</td><td>in-plane (along x — vs head-on along z, Axis 5)</td></tr>
   </table>
   <aside class="notes">
-    ⏱ 0:30 (cum 9:50). Transition into Part 2. "We've built a galaxy and merged
+    ⏱ 0:30 (cum 10:35). Transition into Part 2. "We've built a galaxy and merged
     two. Now we fix everything at this baseline and turn exactly one knob per axis."
     Each upcoming slide changes one row of this table. (Scans run at N=40k for speed;
     the showcase gif earlier was the N=160k high-res version.)
@@ -400,7 +435,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:10 (cum 11:00). First axis — talk over the gif. One sentence per outcome.
+    ⏱ 1:10 (cum 11:45). First axis — talk over the gif. One sentence per outcome.
     Takeaway: a sharp merge/flyby threshold, and Chandrasekhar friction is why.
   </aside>
 </section>
@@ -423,7 +458,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:05 (cum 12:05). Talk over the gif. The spectacular real systems are a
+    ⏱ 1:05 (cum 12:50). Talk over the gif. The spectacular real systems are a
     prograde survivor-bias — most mergers are less dramatic because the disk spin
     isn't aligned with the orbit.
   </aside>
@@ -449,7 +484,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:05 (cum 13:10). Talk over the gif. Same physics interpolates between two
+    ⏱ 1:05 (cum 13:55). Talk over the gif. Same physics interpolates between two
     observationally distinct regimes — point at 1:1 (destruction) vs 1:8 (survival).
   </aside>
 </section>
@@ -473,7 +508,7 @@
     </div>
   </div>
   <aside class="notes">
-    ⏱ 1:00 (cum 14:10). Talk over the gif. The qualitative jump from clean 2-body
+    ⏱ 1:00 (cum 14:55). Talk over the gif. The qualitative jump from clean 2-body
     to chaotic 3-body. Keep it tight — it's the build-up before the finale.
   </aside>
 </section>
@@ -489,7 +524,7 @@
   <div class="caption">Orbit perpendicular to the disks, dead-centre impact.
     A Cartwheel-style ring — impossible in any in-plane geometry.</div>
   <aside class="notes">
-    ⏱ 1:20 (cum 15:30). THE finale. The first four axes stayed in the disk plane;
+    ⏱ 1:20 (cum 16:15). THE finale. The first four axes stayed in the disk plane;
     this one tips the orbit perpendicular and hits dead-centre. Big pause — let the
     ring form and expand on screen. "Nothing in the planar mergers could make this."
     Mechanism on the next slide.
@@ -510,7 +545,7 @@
     rebound in phase → a coherent <b>outward density wave</b>. Ring at
     \(R\!\approx\!10\text{–}12\) kpc, expanding \(\sim\!50\) km/s — like the real Cartwheel.</p>
   <aside class="notes">
-    ⏱ 1:15 (cum 16:45). Mechanism: inward impulse → infall → overshoot → rebound →
+    ⏱ 1:15 (cum 17:30). Mechanism: inward impulse → infall → overshoot → rebound →
     coherent outward wave. The Σ(R) bump marching outward in radius is the proof it's
     a wave, not a static feature — drop the 50 km/s number, it lands. Symbols:
     \(M_p\) = intruder mass, \(b\) = impact parameter, \(V\) = passage speed
@@ -535,7 +570,7 @@
   <p style="margin-top:0.9em;font-size:0.66em;color:#9aa7b4;">Limits: collisionless (no gas/SF),
     finite N, direct-N² (no tree). Each is a clear next step.</p>
   <aside class="notes">
-    ⏱ 1:00 (cum 17:45). The recap matrix — "we mapped the encounter parameter
+    ⏱ 1:00 (cum 18:30). The recap matrix — "we mapped the encounter parameter
     space from one code." End on the limitations so Q&amp;A has a friendly opening.
   </aside>
 </section>
@@ -557,7 +592,7 @@
     <li>Naab (2006), <i>N-body Simulations and Galaxy Formation</i> — practicum manual (model units &amp; exercises).</li>
   </ul>
   <aside class="notes">
-    ⏱ 0:15 (cum 18:00). Flash it — say Toomre and Hernquist out loud, their
+    ⏱ 0:15 (cum 18:45). Flash it — say Toomre and Hernquist out loud, their
     results recur through the talk. Leave it up into the closing if you like.
   </aside>
 </section>
@@ -566,7 +601,7 @@
   <h2>Thank you</h2>
   <p style="color:#9aa7b4;">Questions?</p>
   <aside class="notes">
-    ⏱ 0:30 (cum 18:30). Leave the Cartwheel mental image hanging. Backup slides
+    ⏱ 0:30 (cum 19:15). Leave the Cartwheel mental image hanging. Backup slides
     are to the right ↓/→ if a question needs them.
   </aside>
 </section>
@@ -613,6 +648,15 @@
     <h3>Inclination — per-run panels</h3>
     <img src="assets/inclination_scan/scan_inclination_grid.png"
          alt="inclination grid static comparison">
+  </section>
+
+  <section>
+    <span class="backup-tag">BACKUP</span>
+    <h3>Tree vs direct \(N^2\) — force accuracy &amp; cost</h3>
+    <img src="assets/comparison/method_force_compare.png"
+         alt="force error histograms by opening angle and timing bars">
+    <div class="caption">Per-particle force error vs opening angle \(\theta\),
+      and wall time per force evaluation at N = 20k / 80k (same machine).</div>
   </section>
 
   <section>
