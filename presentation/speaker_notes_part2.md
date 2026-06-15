@@ -97,19 +97,22 @@ baseline) and **how to read the physical meaning** of the outcome.
 ## 17. Axis 4 — Number: what if it's not just two? · ⏱ 1:00 (cum 14:10)
 
 **Parameter changed:** number of galaxies — 2 → 3, equal mass, on an equilateral triangle with a slightly sub-Keplerian tangential speed so they spiral inward.
-**Physical interpretation:** two bodies on a parabola are clean and deterministic; a third turns it into the chaotic three-body problem, so the path to the merger is sensitive to initial conditions.
+**Physical interpretation:** two bodies on a parabola are clean and deterministic; a third makes it formally a three-body problem (no closed-form orbit). NOTE — we verified the seed claim: across 4 random seeds, galaxy 1 pairs with galaxy 2 first in all of them, so the merger order is set by the deterministic inclination geometry, NOT the seed. The chaos is there in principle but this symmetric setup is too constrained to amplify it. Robust outcome: a near-simultaneous three-way collapse to one hotter, more phase-mixed remnant.
 
 > The fourth knob is just: what if there are three? I place three equal galaxies on
 > an equilateral triangle, with a tangential speed a little below circular so they
 > gradually spiral inward. Remember the two-body merger was clean and deterministic
-> — a parabolic orbit you can write down on paper. Add a third body and you're in
-> the three-body problem: there's no closed-form orbit, and which pair pairs up
-> first is genuinely sensitive to the setup — change the random seed and you can
-> change the order of events. They do all eventually merge, but into a remnant
-> that's hotter and more thoroughly phase-mixed than any one-to-one collision —
-> there's simply more shuffling per relaxation time. And real compact groups do
-> exactly this: Stephan's Quintet is the famous example, and the end product is
-> generally more violent than a tidy sequence of pairwise mergers.
+> — a parabolic orbit you can write down on paper. With three bodies there's no
+> closed-form orbit anymore — it's formally the chaotic three-body problem. But our
+> setup is very symmetric, so what actually happens is the three fall in nearly
+> together and collapse almost simultaneously into a single remnant — one that's
+> hotter and more thoroughly phase-mixed than any one-to-one collision, because
+> there's more shuffling per relaxation time. (We did check whether the random seed
+> changes which pair merges first — it doesn't; the order is fixed by the geometry,
+> not the chaos. You'd need a deliberately lopsided setup to see the seed matter.)
+> And real compact groups do exactly this: Stephan's Quintet is the famous example,
+> and the end product is generally more violent than a tidy sequence of pairwise
+> mergers.
 
 ---
 
@@ -182,6 +185,39 @@ baseline) and **how to read the physical meaning** of the outcome.
 > back in 1972, and Hernquist, whose method is how we built equilibrium galaxies in
 > the first place. Both thread through this entire talk. Thank you — happy to take
 > questions.
+
+---
+
+## Backup — Does the disk survive? (remnant shape vs mass ratio)
+
+Reachable from the backups; the mass-ratio slide note points here. Use if a grader
+pushes on "merger vs accretion — how do you actually know the disk survives?"
+
+**What it is:** for each mass ratio, the primary galaxy's disk stars at the final
+snapshot (t=300), measured three independent ways. All three agree and flip
+between 1:2 and 1:4.
+
+| ratio | flattening c/a | rotation v/σ | profile     | verdict        |
+|-------|----------------|--------------|-------------|----------------|
+| 1:1   | 0.43           | 0.43         | R^1/4       | elliptical     |
+| 1:2   | 0.37           | 0.86         | R^1/4       | elliptical     |
+| 1:4   | 0.24           | 1.17         | exponential | disk survives  |
+| 1:8   | 0.19           | 1.32         | exponential | disk survives  |
+
+> If someone asks how we know a minor merger preserves the disk: we measured the
+> primary's remnant three independent ways — its flattening, its
+> rotation-versus-random-motion ratio, and its surface-brightness profile — and all
+> three say the same thing and flip at the same place. At 1:1 and 1:2 the disk is
+> destroyed into a round, pressure-supported R-to-the-quarter elliptical, the same
+> kind of object as our baseline remnant. At 1:4 and 1:8 the primary stays a
+> flattened, rotation-supported exponential disk — it survives. So the
+> merger-to-accretion transition is real, and it sits between a 1:2 and a 1:4 mass
+> ratio. The honest caveat is that the surviving disks are dynamically heated —
+> thicker than a pristine cold disk — but they're unambiguously disks, not ellipticals.
+
+**Numbers to have ready:** v/σ climbs 0.43 → 0.86 → 1.17 → 1.32 (crosses 1 — the
+disk/elliptical line — between 1:2 and 1:4); flattening c/a 0.43 → 0.19 (round blob
+→ thin disk). Figure: `assets/mass_ratio_scan/massratio_shape_compare.png`.
 
 ---
 

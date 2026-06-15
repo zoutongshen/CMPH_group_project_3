@@ -15,7 +15,7 @@ kept in sync with the deck. The audience has the source, so it's fine to say
 | Pericentre | `r_p` 5 → 1, 5, 10, 20 (3.5–70 kpc) | merge t≈60 / 120 / 600; r_p=20 escapes (no return by t=900) | drag ∝ ρ — wider pass barely interpenetrates → low density → little energy lost |
 | Inclination | disk-2 tilt 30° → 0–180° | prograde = long symmetric tails; retrograde ≈ none | spin–orbit resonance lifts only co-rotating material |
 | Mass ratio | 1:1 → 1:2, 1:4, 1:8 | 1:1 destroys both → elliptical; 1:8 secondary absorbed by t≈800 | merger→accretion is one continuum |
-| Number | 2 → 3 galaxies | which pair meets first is seed-sensitive; hotter remnant | 3-body chaos, no closed orbit |
+| Number | 2 → 3 galaxies | near-simultaneous collapse → hotter, more mixed remnant | formally chaotic, but this symmetric setup's order is seed-robust |
 | Collision axis | x → z, head-on (r_p=0) | Cartwheel ring, peak t≈33, R≈10–12 kpc, ~50 km/s | inward impulse → overshoot → outward Σ(R) wave |
 
 **If you remember four numbers:** ε = 0.1 = 0.35 kpc · v_c ≈ 240 km/s
@@ -102,10 +102,13 @@ re-ran out to t = 900 to confirm it never turns around.
 ▸ slide 14 + backup "Pericentre — late-time flyby".
 
 **Q: Is the three-galaxy result just one realization — would another seed differ?**
-Yes, and that's the point. With three bodies the dynamics are chaotic, so which
-pair pairs up first is seed-sensitive; the robust outcome is "they all merge into
-a hot, well-mixed remnant," but the path there is not. We show one representative
-run; a quantitative study would need an ensemble of seeds.
+We checked: across four random seeds, galaxy 1 pairs with galaxy 2 first in all of
+them, so the merger order is robust — it's set by the deterministic inclination
+geometry (galaxy 1 flat, 2 at +30°, 3 at −30°), not by the random realization. The
+three-body problem is chaotic in principle, but this symmetric setup is too
+constrained to amplify the seed noise into a different order; every seed gives a
+near-simultaneous three-way collapse to the same hot remnant. Seeing true
+seed-sensitivity would need a deliberately asymmetric configuration.
 ▸ slide 17.
 
 **Q: What does the Toomre Q = 1.5 actually buy you?**
