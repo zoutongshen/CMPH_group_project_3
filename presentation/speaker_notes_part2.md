@@ -2,7 +2,7 @@
 
 Full spoken script for the slides from **"Beyond the baseline merger"** through
 **"Key references"** (deck slides 13–21). Zoutong presents this half and takes
-the clicker at the divider. Time cues match the deck and land the talk at 19:15.
+the clicker at the divider. Time cues match the deck and land the talk at 18:30.
 
 This is the read-from sheet — the in-deck `<aside>` notes carry only the ⏱ cue
 plus the **Knob / Result / Physics** bullets. Pace ≈ 140 words/min. The
@@ -13,7 +13,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 13. Beyond the baseline merger · ⏱ 0:30 (cum 10:35)
+## 13. Beyond the baseline merger · ⏱ 0:30 (cum 9:50)
 
 **[Zoutong takes the clicker.]**
 **Parameter changed:** none yet — this sets the rule for everything that follows.
@@ -28,7 +28,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 14. Axis 1 — Pericentre: how close must they pass to merge? · ⏱ 1:10 (cum 11:45)
+## 14. Axis 1 — Pericentre: how close must they pass to merge? · ⏱ 1:10 (cum 11:00)
 
 **Parameter changed:** pericentre distance `r_p` — baseline 5 (17.5 kpc), swept over 1, 5, 10, 20 code units = 3.5 to 70 kpc. Everything else held fixed.
 **Physical interpretation:** what sets the threshold is how deeply the two galaxies interpenetrate. Small pericentre → deep overlap → high local density → strong dynamical friction (drag ∝ ρ) → lots of orbital energy lost → they bind. Wide pericentre → only grazes the low-density outskirts → little drag → flyby. (The orbit is parabolic, so speed isn't an independent knob: a closer pass is actually *faster* at pericentre — the density term dominates.)
@@ -53,7 +53,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 15. Axis 2 — Inclination: what shapes the tidal tails? · ⏱ 1:05 (cum 12:50)
+## 15. Axis 2 — Inclination: what shapes the tidal tails? · ⏱ 1:05 (cum 12:05)
 
 **Parameter changed:** inclination of disk 2 relative to the orbital plane — baseline 30°, swept 0, 30, 60, 90, 180°. The orbit itself is unchanged.
 **Physical interpretation:** tidal tails are a spin–orbit resonance — only disk material co-rotating with the encounter is lifted into long tails; counter-rotating material barely responds.
@@ -74,7 +74,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 16. Axis 3 — Mass ratio: when does a merger become accretion? · ⏱ 1:05 (cum 13:55)
+## 16. Axis 3 — Mass ratio: when does a merger become accretion? · ⏱ 1:05 (cum 13:10)
 
 **Parameter changed:** mass ratio `M₂/M₁` — baseline 1:1, swept 1:2, 1:4, 1:8. The secondary's particle count scales with its mass too, so it is structurally the same galaxy, just lighter.
 **Physical interpretation:** "merger" and "accretion" are not two categories but the two ends of one continuum, and the mass ratio is the dial.
@@ -94,7 +94,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 17. Axis 4 — Number: what if it's not just two? · ⏱ 1:00 (cum 14:55)
+## 17. Axis 4 — Number: what if it's not just two? · ⏱ 1:00 (cum 14:10)
 
 **Parameter changed:** number of galaxies — 2 → 3, equal mass, on an equilateral triangle with a slightly sub-Keplerian tangential speed so they spiral inward.
 **Physical interpretation:** two bodies on a parabola are clean and deterministic; a third turns it into the chaotic three-body problem, so the path to the merger is sensitive to initial conditions.
@@ -113,7 +113,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 18. Axis 5 — Collision axis: a head-on hit makes a ring · ⏱ 1:20 (cum 16:15) ★ flagship
+## 18. Axis 5 — Collision axis: a head-on hit makes a ring · ⏱ 1:20 (cum 15:30) ★ flagship
 
 **Parameter changed:** collision axis — baseline in-plane (along x); now perpendicular (along z) AND head-on (pericentre 0). The orbit is tipped out of the disk plane so the galaxies meet face-on, dead-centre.
 **Physical interpretation:** the morphology is set not just by *what* collides but by the *geometry of how* — a perpendicular, central impact makes a ring that no in-plane geometry can.
@@ -135,7 +135,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 19. Why a ring? — the impulse mechanism · ⏱ 1:15 (cum 17:30)
+## 19. Why a ring? — the impulse mechanism · ⏱ 1:15 (cum 16:45)
 
 **Parameter changed:** none — this explains the flagship result.
 **Physical interpretation:** the ring is a radial density wave, not a static structure; the outward-marching Σ(R) bump is the proof.
@@ -157,7 +157,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 20. Summary · ⏱ 1:00 (cum 18:30)
+## 20. Summary · ⏱ 1:00 (cum 17:45)
 
 **Parameter changed:** all five axes, recapped.
 **Physical interpretation:** one code + one baseline mapped a five-dimensional slice of merger outcomes.
@@ -176,7 +176,7 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 ---
 
-## 21. Key references · ⏱ 0:15 (cum 18:45)
+## 21. Key references · ⏱ 0:15 (cum 18:00)
 
 > Two names worth saying out loud: Toomre and Toomre, who explained the tidal tails
 > back in 1972, and Hernquist, whose method is how we built equilibrium galaxies in
@@ -189,16 +189,16 @@ baseline) and **how to read the physical meaning** of the outcome.
 
 | slide | budget | cum |
 |---|---|---|
-| 13 divider | 0:30 | 10:35 |
-| 14 pericentre | 1:10 | 11:45 |
-| 15 inclination | 1:05 | 12:50 |
-| 16 mass ratio | 1:05 | 13:55 |
-| 17 three-galaxy | 1:00 | 14:55 |
-| 18 Cartwheel finale | 1:20 | 16:15 |
-| 19 ring mechanism | 1:15 | 17:30 |
-| 20 summary | 1:00 | 18:30 |
-| 21 references | 0:15 | 18:45 |
-| 22 thank you | 0:30 | 19:15 |
+| 13 divider | 0:30 | 9:50 |
+| 14 pericentre | 1:10 | 11:00 |
+| 15 inclination | 1:05 | 12:05 |
+| 16 mass ratio | 1:05 | 13:10 |
+| 17 three-galaxy | 1:00 | 14:10 |
+| 18 Cartwheel finale | 1:20 | 15:30 |
+| 19 ring mechanism | 1:15 | 16:45 |
+| 20 summary | 1:00 | 17:45 |
+| 21 references | 0:15 | 18:00 |
+| 22 thank you | 0:30 | 18:30 |
 
 Part 2 content ≈ 8:40 (within the 8–10 min target). If you need more Q&A buffer,
 the cheapest trims are three-galaxy 1:00 → 0:50 and reading references as a flash.
